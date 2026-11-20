@@ -1,0 +1,152 @@
+{
+ "version": "aladin-e-weekly-1",
+ "week": 1,
+ "session": "2026-11-19",
+ "since": "2026-11-13",
+ "sessions_in_week": 4,
+ "account": {
+  "value": 98898.9,
+  "value_week_start": 101121.01,
+  "capital": 100000,
+  "week_pct": -2.2,
+  "since_start_pct": -1.1,
+  "from_peak_pct": -2.21,
+  "peak": 101134.16,
+  "cash": 40497.82,
+  "positions": 24,
+  "costs_paid_total": 113.35
+ },
+ "nifty500": {
+  "week_pct": 0.69,
+  "since_start_pct": 1.4
+ },
+ "backtest": {
+  "week_band": "not compared: this week had 4 sessions, the back-test range is for 5",
+  "since_start_band": "compared at week 4",
+  "week_range": {
+   "p01": -7.55,
+   "p05": -4.33,
+   "p10": -2.93,
+   "p25": -1.08,
+   "p50": 0.55,
+   "p75": 2.13,
+   "p90": 3.82,
+   "p95": 5.07,
+   "p99": 7.94,
+   "share_below_zero_pct": 41.0,
+   "n_windows": 4159
+  },
+  "four_week_range": {
+   "p01": -13.71,
+   "p05": -7.21,
+   "p10": -4.87,
+   "p25": -1.6,
+   "p50": 1.71,
+   "p75": 5.08,
+   "p90": 8.85,
+   "p95": 11.56,
+   "p99": 17.95,
+   "share_below_zero_pct": 36.7,
+   "n_windows": 4145
+  }
+ },
+ "trades": {
+  "count": 0,
+  "bought": 0,
+  "sold": 0,
+  "costs": 0,
+  "list": []
+ },
+ "holdings": {
+  "best": [
+   [
+    "RAYMOND",
+    8.66
+   ],
+   [
+    "CUPID",
+    6.07
+   ],
+   [
+    "CYIENTDLM",
+    5.37
+   ]
+  ],
+  "worst": [
+   [
+    "FCL",
+    -15.21
+   ],
+   [
+    "MOREPENLAB",
+    -11.6
+   ],
+   [
+    "TBZ",
+    -9.44
+   ]
+  ]
+ },
+ "risk": {
+  "risk_on": null,
+  "invested_share": 0.7,
+  "nifty500_close": null,
+  "nifty500_ma200": null,
+  "kill": null,
+  "next_rebalance_in_sessions": 56
+ },
+ "checks": [
+  {
+   "rule": "F1",
+   "what": "every trading day since the start has a record",
+   "ok": false,
+   "detail": "7 trading days checked; missing 2026-11-17, 2026-11-18"
+  },
+  {
+   "rule": "F1",
+   "what": "this evening's run used closing prices (it ran after 15:30 IST)",
+   "ok": true,
+   "detail": "run at 2026-11-20T06:43:55Z"
+  },
+  {
+   "rule": "S3",
+   "what": "cash plus holdings at the close equals the reported value",
+   "ok": true,
+   "detail": "Rs 98,899 worked out, Rs 98,899 reported"
+  },
+  {
+   "rule": "S3",
+   "what": "every fill this week was at that day's opening price",
+   "ok": true,
+   "detail": "no fills this week"
+  },
+  {
+   "rule": "S3",
+   "what": "the public signals list exactly the account's holdings, at the prices it paid",
+   "ok": true,
+   "detail": "24 held in the signals, 24 in the account"
+  },
+  {
+   "rule": "F3",
+   "what": "no more than 2 orders not filled",
+   "ok": true,
+   "detail": "1 so far: SANSERA 2026-11-11 (one share cost more than the Rs 2,800 slot)"
+  }
+ ],
+ "rules": {
+  "stop": [],
+  "fix": [
+   "F1: every trading day since the start has a record: 7 trading days checked; missing 2026-11-17, 2026-11-18"
+  ],
+  "verdict": "Fix",
+  "final": false,
+  "label": "So far, by the rules",
+  "rules_file": "aladin-audit/PHASE7_RULES.md"
+ },
+ "notes": [
+  "The back-test ranges come from free data that covers only companies listed today, so they flatter model E.",
+  "Four weeks cannot show whether model E has an edge; that needs at least a year of live record.",
+  "Educational analysis on paper only, not investment advice."
+ ],
+ "written_utc": "2026-11-20T06:43:56Z"
+}
