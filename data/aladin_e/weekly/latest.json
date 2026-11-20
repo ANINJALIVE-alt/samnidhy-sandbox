@@ -1,27 +1,27 @@
 {
  "version": "aladin-e-weekly-1",
- "week": 1,
- "session": "2026-11-19",
- "since": "2026-11-13",
- "sessions_in_week": 4,
+ "week": 2,
+ "session": "2026-11-20",
+ "since": "2026-11-19",
+ "sessions_in_week": 1,
  "account": {
-  "value": 98898.9,
-  "value_week_start": 101121.01,
+  "value": 98001.44,
+  "value_week_start": 98898.9,
   "capital": 100000,
-  "week_pct": -2.2,
-  "since_start_pct": -1.1,
-  "from_peak_pct": -2.21,
+  "week_pct": -0.91,
+  "since_start_pct": -2.0,
+  "from_peak_pct": -3.1,
   "peak": 101134.16,
   "cash": 40497.82,
   "positions": 24,
   "costs_paid_total": 113.35
  },
  "nifty500": {
-  "week_pct": 0.69,
-  "since_start_pct": 1.4
+  "week_pct": 0.8,
+  "since_start_pct": 2.21
  },
  "backtest": {
-  "week_band": "not compared: this week had 4 sessions, the back-test range is for 5",
+  "week_band": "not compared: this week had 1 sessions, the back-test range is for 5",
   "since_start_band": "compared at week 4",
   "week_range": {
    "p01": -7.55,
@@ -61,58 +61,58 @@
   "best": [
    [
     "RAYMOND",
-    8.66
+    8.97
+   ],
+   [
+    "WELSPUNLIV",
+    6.24
    ],
    [
     "CUPID",
-    6.07
-   ],
-   [
-    "CYIENTDLM",
-    5.37
+    5.99
    ]
   ],
   "worst": [
    [
+    "TBZ",
+    -16.11
+   ],
+   [
     "FCL",
-    -15.21
+    -15.62
    ],
    [
     "MOREPENLAB",
-    -11.6
-   ],
-   [
-    "TBZ",
-    -9.44
+    -12.2
    ]
   ]
  },
  "risk": {
-  "risk_on": null,
+  "risk_on": true,
   "invested_share": 0.7,
-  "nifty500_close": null,
-  "nifty500_ma200": null,
+  "nifty500_close": 24088.8,
+  "nifty500_ma200": 22795.44,
   "kill": null,
-  "next_rebalance_in_sessions": 56
+  "next_rebalance_in_sessions": 55
  },
  "checks": [
   {
    "rule": "F1",
    "what": "every trading day since the start has a record",
    "ok": false,
-   "detail": "7 trading days checked; missing 2026-11-17, 2026-11-18"
+   "detail": "8 trading days checked; missing 2026-11-17, 2026-11-18"
   },
   {
    "rule": "F1",
    "what": "this evening's run used closing prices (it ran after 15:30 IST)",
    "ok": true,
-   "detail": "run at 2026-11-20T06:43:55Z"
+   "detail": "run at 2026-11-20T14:39:43Z"
   },
   {
    "rule": "S3",
    "what": "cash plus holdings at the close equals the reported value",
    "ok": true,
-   "detail": "Rs 98,899 worked out, Rs 98,899 reported"
+   "detail": "Rs 98,001 worked out, Rs 98,001 reported"
   },
   {
    "rule": "S3",
@@ -136,7 +136,7 @@
  "rules": {
   "stop": [],
   "fix": [
-   "F1: every trading day since the start has a record: 7 trading days checked; missing 2026-11-17, 2026-11-18"
+   "F1: every trading day since the start has a record: 8 trading days checked; missing 2026-11-17, 2026-11-18"
   ],
   "verdict": "Fix",
   "final": false,
@@ -148,5 +148,5 @@
   "Four weeks cannot show whether model E has an edge; that needs at least a year of live record.",
   "Educational analysis on paper only, not investment advice."
  ],
- "written_utc": "2026-11-20T06:43:56Z"
+ "written_utc": "2026-11-20T14:39:45Z"
 }
