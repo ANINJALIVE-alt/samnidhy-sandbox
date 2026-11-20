@@ -1,0 +1,150 @@
+{
+ "as_of": "2026-11-06",
+ "created_utc": "2026-11-09T23:52:36.223662+00:00",
+ "stocks_forecast": 1386,
+ "horizons": [
+  1,
+  5,
+  10,
+  20,
+  60
+ ],
+ "model_version": "har-cqr-1",
+ "product_state_counts": {
+  "Suspended": 1386
+ },
+ "active_strategies": [
+  "disc_f1303479",
+  "disc_116ec236",
+  "disc_f3a0927e",
+  "disc_9206642a",
+  "disc_59aad73b",
+  "disc_d2734315",
+  "disc_4d9bd6ed",
+  "disc_c2ca1f6e",
+  "disc_fc511ddb",
+  "disc_5dd07bc9",
+  "disc_280912c0",
+  "disc_1d36382a",
+  "disc_f2958149",
+  "disc_de46d8da",
+  "disc_dc449b4b",
+  "disc_c57140f1",
+  "disc_e56ce610",
+  "disc_cec157da",
+  "disc_b9d63934",
+  "disc_7c0b5a66",
+  "disc_297cd4fe",
+  "disc_85c76631",
+  "disc_146a0748",
+  "disc_f166572b",
+  "ma_cross_50_200",
+  "disc_bd1271ac",
+  "disc_c50d4fbc",
+  "disc_c16d1e13"
+ ],
+ "probation_strategies": [],
+ "bullish_signals": 0,
+ "live_stats": {
+  "forecast_batches": 22,
+  "outcomes": {
+   "1": {
+    "n": 19233,
+    "coverage": {
+     "50": 0.4454,
+     "80": 0.7522,
+     "95": 0.9237
+    },
+    "p_up_n": 19233,
+    "ece": 0.146
+   },
+   "5": {
+    "n": 16921,
+    "coverage": {
+     "50": 0.4502,
+     "80": 0.7267,
+     "95": 0.9072
+    },
+    "p_up_n": 16921,
+    "ece": 0.1307
+   },
+   "10": {
+    "n": 11459,
+    "coverage": {
+     "50": 0.4109,
+     "80": 0.7138,
+     "95": 0.9142
+    }
+   },
+   "20": {
+    "n": 1831,
+    "coverage": {
+     "50": 0.5156,
+     "80": 0.8039,
+     "95": 0.9405
+    }
+   }
+  }
+ },
+ "engine_suspended": true,
+ "kill_reasons": [
+  "live calibration error 0.146 is above 0.05 (n = 19233)",
+  "live 50% band covered 44.5%, more than 4% from nominal (n = 19233)",
+  "live 80% band covered 75.2%, more than 4% from nominal (n = 19233)"
+ ],
+ "ledger_status": "already in the ledger, not rewritten",
+ "disclaimer": "ALADIN is a statistical model built by students. It is often wrong. Educational analysis only, not investment advice. Past performance does not predict future results.",
+ "timings_s": [
+  [
+   "panel (prices, features, 1,100+ stocks)",
+   60.8,
+   931538
+  ],
+  [
+   "select today's rows (the configured liquid universe, forecast.universe_top)",
+   0.0,
+   1386
+  ],
+  [
+   "fit + predict H=1",
+   19.4,
+   1386
+  ],
+  [
+   "fit + predict H=5",
+   19.5,
+   1386
+  ],
+  [
+   "fit + predict H=10",
+   19.9,
+   1386
+  ],
+  [
+   "fit + predict H=20",
+   19.6,
+   1386
+  ],
+  [
+   "fit + predict H=60",
+   19.6,
+   1386
+  ],
+  [
+   "ledger forecast batch (already in the ledger, not rewritten)",
+   0.4,
+   1386
+  ],
+  [
+   "resolve matured forecasts",
+   0.4,
+   0
+  ],
+  [
+   "states, signals, kill switches",
+   0.4,
+   1386
+  ]
+ ],
+ "total_s": 160
+}

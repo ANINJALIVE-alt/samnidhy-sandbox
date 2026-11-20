@@ -1,0 +1,140 @@
+{
+  "session_date": "2026-09-24",
+  "source": {
+    "session_file": "https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_24092026.csv",
+    "universe": "https://niftyindices.com/IndexConstituent/ind_nifty500list.csv",
+    "universe_source": "downloaded"
+  },
+  "settings": {
+    "picks": {
+      "gainers_count": 3,
+      "losers_count": 3
+    },
+    "filters": {
+      "universe_name": "NIFTY 500",
+      "universe_url": "https://niftyindices.com/IndexConstituent/ind_nifty500list.csv",
+      "series": [
+        "EQ"
+      ],
+      "min_price": 50,
+      "min_turnover_crore": 10,
+      "max_abs_move_pct": 30,
+      "min_history_years": 1,
+      "exclude_prefixes": [
+        "DUMMY"
+      ],
+      "exclude_symbols": []
+    }
+  },
+  "universe_count": 499,
+  "eligible_count": 432,
+  "gainers": [
+    {
+      "group": "gainer",
+      "rank": 1,
+      "label": "Top Gainer #1",
+      "symbol": "ABDL",
+      "yahoo_ticker": "ABDL.NS",
+      "name": "Allied Blenders and Distillers Ltd.",
+      "industry": "Fast Moving Consumer Goods",
+      "prev_close": 656.4,
+      "open": 660.0,
+      "high": 722.0,
+      "low": 650.0,
+      "close": 712.15,
+      "pct_change": 8.4933,
+      "volume": 6590774,
+      "turnover_crore": 457.08
+    },
+    {
+      "group": "gainer",
+      "rank": 2,
+      "label": "Top Gainer #2",
+      "symbol": "ICICIGI",
+      "yahoo_ticker": "ICICIGI.NS",
+      "name": "ICICI Lombard General Insurance Company Ltd.",
+      "industry": "Financial Services",
+      "prev_close": 1500.6,
+      "open": 1471.9,
+      "high": 1583.9,
+      "low": 1465.6,
+      "close": 1577.0,
+      "pct_change": 5.0913,
+      "volume": 2743847,
+      "turnover_crore": 428.34
+    },
+    {
+      "group": "gainer",
+      "rank": 3,
+      "label": "Top Gainer #3",
+      "symbol": "SUNTV",
+      "yahoo_ticker": "SUNTV.NS",
+      "name": "Sun TV Network Ltd.",
+      "industry": "Media Entertainment & Publication",
+      "prev_close": 490.2,
+      "open": 485.0,
+      "high": 522.0,
+      "low": 483.0,
+      "close": 512.7,
+      "pct_change": 4.59,
+      "volume": 3364719,
+      "turnover_crore": 172.81
+    }
+  ],
+  "losers": [
+    {
+      "group": "loser",
+      "rank": 1,
+      "label": "Top Loser #1",
+      "symbol": "MFSL",
+      "yahoo_ticker": "MFSL.NS",
+      "name": "Max Financial Services Ltd.",
+      "industry": "Financial Services",
+      "prev_close": 1562.9,
+      "open": 1406.7,
+      "high": 1429.8,
+      "low": 1360.1,
+      "close": 1410.0,
+      "pct_change": -9.7831,
+      "volume": 11421840,
+      "turnover_crore": 1592.48
+    },
+    {
+      "group": "loser",
+      "rank": 2,
+      "label": "Top Loser #2",
+      "symbol": "LTF",
+      "yahoo_ticker": "LTF.NS",
+      "name": "L&T Finance Ltd.",
+      "industry": "Financial Services",
+      "prev_close": 310.0,
+      "open": 279.0,
+      "high": 290.6,
+      "low": 279.0,
+      "close": 282.0,
+      "pct_change": -9.0323,
+      "volume": 36077849,
+      "turnover_crore": 1027.56
+    },
+    {
+      "group": "loser",
+      "rank": 3,
+      "label": "Top Loser #3",
+      "symbol": "HDFCLIFE",
+      "yahoo_ticker": "HDFCLIFE.NS",
+      "name": "HDFC Life Insurance Company Ltd.",
+      "industry": "Financial Services",
+      "prev_close": 561.5,
+      "open": 531.0,
+      "high": 535.35,
+      "low": 514.0,
+      "close": 526.9,
+      "pct_change": -6.1621,
+      "volume": 17905953,
+      "turnover_crore": 944.5
+    }
+  ],
+  "skipped": [],
+  "fetched_at_utc": "2026-09-25T03:43:29+00:00",
+  "fetched_at_ist": "25 Sep 2026, 09:13 AM IST"
+}

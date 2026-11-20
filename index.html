@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" class="dark font-sans antialiased">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B-Lab Terminal · Search any NSE stock</title>
+<meta name="description" content="Search any of 3,500+ NSE stocks and see its whole story: five years of prices, how it compares with the market, fundamentals, what the models see and who it does business with. Then open the full terminal.">
+<meta name="theme-color" content="#09090b">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="canonical" href="https://aninjalive-alt.github.io/samnidhy-sandbox/index.html">
+<meta property="og:title" content="B-Lab Terminal · Search any NSE stock">
+<meta property="og:type" content="website">
+<meta property="og:description" content="Search any NSE stock and see its whole story, then open the full terminal. A TAPMI student markets lab. Educational analysis only.">
+<meta property="og:site_name" content="B-Lab Terminal">
+<meta property="og:url" content="https://aninjalive-alt.github.io/samnidhy-sandbox/index.html">
+<meta property="og:image" content="https://aninjalive-alt.github.io/samnidhy-sandbox/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="ui.css">
+</head>
+<!-- Search field skeleton: HyperUI application/inputs/3 (https://hyperui.dev, MIT licence, (c) Mark Mead; ui/HYPERUI-LICENSE).
+     The glow, the light beam, the results list and the stock story are the site's own (ui/input.css, ui-home.js). -->
+<body class="hx-body min-h-dvh bg-zinc-950 text-zinc-100">
+<div class="hx-bg" aria-hidden="true"><div class="hx-grid"></div><div class="hx-spot"></div></div>
+
+<header class="relative z-10 mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+  <a href="index.html" class="flex items-center gap-2.5 text-zinc-100">
+    <svg class="h-7 text-emerald-400" viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect x="3" y="17" width="6" height="12" rx="1.5" fill="currentColor"/><rect x="13" y="9" width="6" height="20" rx="1.5" fill="currentColor"/><rect x="23" y="3" width="6" height="26" rx="1.5" fill="currentColor"/></svg>
+    <span class="font-semibold tracking-tight">B-Lab <span class="text-zinc-400">Terminal</span></span>
+  </a>
+  <nav aria-label="Site" class="flex items-center gap-2 text-sm">
+    <a class="hidden rounded-lg px-3 py-2 text-zinc-400 transition hover:text-zinc-100 sm:block" href="advanced.html">Daily screen</a>
+    <a class="hidden rounded-lg px-3 py-2 text-zinc-400 transition hover:text-zinc-100 sm:block" href="sandbox.html">Lessons</a>
+    <a class="rounded-lg border border-zinc-800 bg-zinc-900/70 px-3.5 py-2 font-medium text-zinc-100 transition hover:border-zinc-600" href="expert-terminal.html">Open the terminal <span aria-hidden="true">→</span></a>
+  </nav>
+</header>
+
+<main id="main" class="relative z-10">
+  <section class="relative z-20 mx-auto flex max-w-3xl flex-col items-center px-4 pt-[12vh] pb-16 text-center sm:px-6">
+    <p class="hx-pill"><span class="hx-live" aria-hidden="true"></span><span><span id="hx-count">3,500+</span> NSE stocks · live through the day</span></p>
+    <h1 class="hx-title mt-6 text-5xl font-extrabold tracking-tight sm:text-7xl">Search a stock.</h1>
+    <p class="mt-5 max-w-xl text-lg text-pretty text-zinc-400 sm:text-xl">Its whole story in one place: five years of prices, how it did against the market, the numbers behind the business, and what our models see.</p>
+
+    <div id="hx-intent" class="mt-8 flex w-full items-center justify-between gap-3 rounded-lg border border-emerald-700 bg-emerald-950/40 px-4 py-2.5 text-left text-sm text-emerald-200" hidden><span id="hx-intent-t"></span><button type="button" id="hx-intent-x" class="rounded px-2 py-1 text-emerald-300 hover:bg-emerald-900/60">Cancel</button></div>
+    <!-- HyperUI application/inputs/3 (label, relative wrapper, input, icon), dressed in the light beam -->
+    <div class="hx-beam mt-10 w-full" id="hx-beam">
+      <label for="Search" class="hx-field">
+        <span class="sr-only"> Search a stock by name or symbol </span>
+        <div class="relative">
+          <span class="pointer-events-none absolute inset-y-0 left-5 grid place-content-center text-zinc-500" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+          </span>
+          <input type="text" id="Search" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="hx-results" aria-autocomplete="list"
+                 class="mt-0.5 w-full rounded border-gray-300 shadow-sm sm:text-sm dark:border-gray-600 dark:bg-gray-900 dark:text-white hx-input" placeholder="Search Reliance, HDFC Bank, Tata Motors…" />
+          <span class="absolute inset-y-0 right-3 grid place-content-center">
+            <kbd class="hx-kbd" aria-hidden="true">/</kbd>
+          </span>
+        </div>
+      </label>
+      <ul id="hx-results" role="listbox" aria-label="Matching stocks" class="hx-results" hidden></ul>
+    </div>
+
+    <div class="mt-5 flex flex-wrap items-center justify-center gap-2 text-sm" id="hx-mine" aria-label="Your stocks" hidden></div>
+    <div class="mt-4 flex flex-wrap items-center justify-center gap-2 text-sm" id="hx-trending" aria-label="Most traded today">
+      <span class="text-zinc-500">Most traded today:</span>
+    </div>
+  </section>
+
+  <!-- HyperUI marketing/feature-grids/1 cards, as buttons for the three most common first tasks -->
+  <section aria-labelledby="tasks-t" class="relative z-0 mx-auto max-w-5xl px-4 pb-12 sm:px-6">
+    <h2 id="tasks-t" class="mb-4 text-center text-sm font-semibold tracking-wide text-zinc-500 uppercase">Or start with a task</h2>
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"><button type="button" data-task="movers" class="group rounded-lg border border-gray-200 p-5 text-left transition hover:border-gray-500 dark:border-gray-700"><div class="inline-flex rounded-lg bg-gray-100 p-2.5 text-gray-700 dark:bg-gray-800 dark:text-gray-200"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" /></svg></div><h3 class="mt-3 text-base font-semibold text-gray-900 dark:text-white">Today's biggest movers</h3><p class="mt-1 text-sm text-pretty text-gray-700 dark:text-gray-300">The NIFTY 500 stocks that rose and fell the most since yesterday.</p></button><button type="button" data-task="chart" class="group rounded-lg border border-gray-200 p-5 text-left transition hover:border-gray-500 dark:border-gray-700"><div class="inline-flex rounded-lg bg-gray-100 p-2.5 text-gray-700 dark:bg-gray-800 dark:text-gray-200"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg></div><h3 class="mt-3 text-base font-semibold text-gray-900 dark:text-white">Compare two stocks</h3><p class="mt-1 text-sm text-pretty text-gray-700 dark:text-gray-300">See two companies on one chart, side by side with the market.</p></button><button type="button" data-task="deps" class="group rounded-lg border border-gray-200 p-5 text-left transition hover:border-gray-500 dark:border-gray-700"><div class="inline-flex rounded-lg bg-gray-100 p-2.5 text-gray-700 dark:bg-gray-800 dark:text-gray-200"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" /></svg></div><h3 class="mt-3 text-base font-semibold text-gray-900 dark:text-white">Who depends on one customer?</h3><p class="mt-1 text-sm text-pretty text-gray-700 dark:text-gray-300">Companies whose revenue rests heavily on a single customer, from their own filings.</p></button><button type="button" data-task="whatif" class="group rounded-lg border border-gray-200 p-5 text-left transition hover:border-gray-500 dark:border-gray-700"><div class="inline-flex rounded-lg bg-gray-100 p-2.5 text-gray-700 dark:bg-gray-800 dark:text-gray-200"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg></div><h3 class="mt-3 text-base font-semibold text-gray-900 dark:text-white">What if I had invested?</h3><p class="mt-1 text-sm text-pretty text-gray-700 dark:text-gray-300">Pick a stock and an amount, see what it would be worth today.</p></button></div>
+  </section>
+
+  <section aria-labelledby="hx-linked-t" id="hx-linked" class="relative z-0 mx-auto max-w-5xl px-4 pb-12 sm:px-6">
+    <h2 id="hx-linked-t" class="mb-1 text-center text-sm font-semibold tracking-wide text-zinc-500 uppercase">Linked moves today</h2>
+    <p class="mb-4 text-center text-sm text-zinc-400">Today's biggest NIFTY 500 moves, and how the companies linked to them moved.</p>
+    <div id="hx-linked-body"><p class="text-center text-sm text-zinc-500">Loading…</p></div>
+  </section>
+  <section aria-label="The market right now" class="relative z-0 mx-auto max-w-5xl px-4 pb-16 sm:px-6">
+    <dl class="hx-tape" id="hx-tape">
+      <div data-mkt="^NSEI"><dt>Nifty 50</dt><dd data-v>--</dd><dd data-c></dd></div>
+      <div data-mkt="^NSEBANK"><dt>Bank Nifty</dt><dd data-v>--</dd><dd data-c></dd></div>
+      <div data-mkt="^INDIAVIX"><dt>India VIX</dt><dd data-v>--</dd><dd data-c></dd></div>
+      <div data-mkt="INR=X"><dt>USD / INR</dt><dd data-v>--</dd><dd data-c></dd></div>
+      <div data-mkt="BZ=F"><dt>Brent crude</dt><dd data-v>--</dd><dd data-c></dd></div>
+    </dl>
+    <p class="mt-3 text-center text-xs text-zinc-500" id="hx-asof"></p>
+  </section>
+</main>
+
+<!-- The stock story: opens over the page when a stock is picked -->
+<div id="story" class="hx-story" role="dialog" aria-modal="true" aria-labelledby="st-name" hidden>
+  <div class="st-sticky" id="st-sticky" aria-hidden="true"></div>
+  <div class="hx-story-in" id="story-in"></div>
+  <div class="st-cta" id="st-cta"></div>
+</div>
+
+<dialog id="hx-deps" class="hx-dialog" aria-labelledby="hx-deps-t">
+  <div class="flex items-center justify-between gap-4"><h2 id="hx-deps-t" class="text-xl font-bold">Companies that depend on one customer</h2><button type="button" id="hx-deps-x" class="rounded-lg border border-zinc-700 px-3 py-1.5 text-sm hover:border-zinc-500">Close</button></div>
+  <div id="hx-deps-body" class="mt-4"></div>
+</dialog>
+<dialog id="hx-movers" class="hx-dialog" aria-labelledby="hx-movers-t">
+  <div class="flex items-center justify-between gap-4"><h2 id="hx-movers-t" class="text-xl font-bold">Today's biggest movers</h2><button type="button" id="hx-movers-x" class="rounded-lg border border-zinc-700 px-3 py-1.5 text-sm hover:border-zinc-500">Close</button></div>
+  <div id="hx-movers-body" class="mt-4"></div>
+</dialog>
+<div id="hx-toasts" class="hx-toasts" aria-live="polite"></div>
+
+<footer class="relative z-10 border-t border-zinc-900 py-8 text-center text-xs text-zinc-500">
+  <p>B-Lab Terminal · a TAPMI student markets lab · educational analysis only, not investment advice.</p>
+  <p class="mt-1">Prices from NSE's end-of-day files and public sources (about 15 minutes delayed in market hours). Search field from <a class="underline" href="https://hyperui.dev" rel="noopener">HyperUI</a> (MIT).</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/lightweight-charts@5.2.1/dist/lightweight-charts.standalone.production.js" defer></script>
+<script type="module" src="ui-home.js"></script>
+</body>
+</html>

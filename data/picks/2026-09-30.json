@@ -1,0 +1,140 @@
+{
+  "session_date": "2026-09-30",
+  "source": {
+    "session_file": "https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_30092026.csv",
+    "universe": "https://niftyindices.com/IndexConstituent/ind_nifty500list.csv",
+    "universe_source": "downloaded"
+  },
+  "settings": {
+    "picks": {
+      "gainers_count": 3,
+      "losers_count": 3
+    },
+    "filters": {
+      "universe_name": "NIFTY 500",
+      "universe_url": "https://niftyindices.com/IndexConstituent/ind_nifty500list.csv",
+      "series": [
+        "EQ"
+      ],
+      "min_price": 50,
+      "min_turnover_crore": 10,
+      "max_abs_move_pct": 30,
+      "min_history_years": 1,
+      "exclude_prefixes": [
+        "DUMMY"
+      ],
+      "exclude_symbols": []
+    }
+  },
+  "universe_count": 494,
+  "eligible_count": 458,
+  "gainers": [
+    {
+      "group": "gainer",
+      "rank": 1,
+      "label": "Top Gainer #1",
+      "symbol": "IRCON",
+      "yahoo_ticker": "IRCON.NS",
+      "name": "IRCON International Ltd.",
+      "industry": "Construction",
+      "prev_close": 102.47,
+      "open": 102.8,
+      "high": 122.96,
+      "low": 102.8,
+      "close": 117.09,
+      "pct_change": 14.2676,
+      "volume": 76654100,
+      "turnover_crore": 895.95
+    },
+    {
+      "group": "gainer",
+      "rank": 2,
+      "label": "Top Gainer #2",
+      "symbol": "SUNTV",
+      "yahoo_ticker": "SUNTV.NS",
+      "name": "Sun TV Network Ltd.",
+      "industry": "Media Entertainment & Publication",
+      "prev_close": 553.25,
+      "open": 555.0,
+      "high": 663.9,
+      "low": 554.05,
+      "close": 605.0,
+      "pct_change": 9.3538,
+      "volume": 34672457,
+      "turnover_crore": 2154.73
+    },
+    {
+      "group": "gainer",
+      "rank": 3,
+      "label": "Top Gainer #3",
+      "symbol": "RITES",
+      "yahoo_ticker": "RITES.NS",
+      "name": "RITES Ltd.",
+      "industry": "Construction",
+      "prev_close": 192.31,
+      "open": 192.6,
+      "high": 218.9,
+      "low": 192.6,
+      "close": 209.05,
+      "pct_change": 8.7047,
+      "volume": 50416237,
+      "turnover_crore": 1069.52
+    }
+  ],
+  "losers": [
+    {
+      "group": "loser",
+      "rank": 1,
+      "label": "Top Loser #1",
+      "symbol": "FORTIS",
+      "yahoo_ticker": "FORTIS.NS",
+      "name": "Fortis Healthcare Ltd.",
+      "industry": "Healthcare",
+      "prev_close": 822.0,
+      "open": 817.0,
+      "high": 821.0,
+      "low": 757.45,
+      "close": 770.0,
+      "pct_change": -6.326,
+      "volume": 5818918,
+      "turnover_crore": 450.92
+    },
+    {
+      "group": "loser",
+      "rank": 2,
+      "label": "Top Loser #2",
+      "symbol": "APOLLOHOSP",
+      "yahoo_ticker": "APOLLOHOSP.NS",
+      "name": "Apollo Hospitals Enterprise Ltd.",
+      "industry": "Healthcare",
+      "prev_close": 8659.0,
+      "open": 8582.0,
+      "high": 8659.0,
+      "low": 8053.0,
+      "close": 8165.5,
+      "pct_change": -5.6993,
+      "volume": 2108531,
+      "turnover_crore": 1730.48
+    },
+    {
+      "group": "loser",
+      "rank": 3,
+      "label": "Top Loser #3",
+      "symbol": "MAXHEALTH",
+      "yahoo_ticker": "MAXHEALTH.NS",
+      "name": "Max Healthcare Institute Ltd.",
+      "industry": "Healthcare",
+      "prev_close": 982.1,
+      "open": 963.0,
+      "high": 976.3,
+      "low": 907.7,
+      "close": 929.8,
+      "pct_change": -5.3253,
+      "volume": 13817675,
+      "turnover_crore": 1286.52
+    }
+  ],
+  "skipped": [],
+  "fetched_at_utc": "2026-10-01T10:24:39+00:00",
+  "fetched_at_ist": "01 Oct 2026, 03:54 PM IST"
+}

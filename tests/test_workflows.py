@@ -1,0 +1,95 @@
+"""Workflow wiring for ALADIN (section 9 of the brief), checked as data: triggers, limits, failure tolerance, commit rules."""
+from pathlib import Path
+
+import yaml
+
+W = Path(__file__).resolve().parent.parent / ".github" / "workflows"
+
+
+def load(name):
+    d = yaml.safe_load((W / name).read_text(encoding="utf-8"))
+    d["on"] = d.get("on", d.get(True))                              # PyYAML reads the key `on` as boolean True
+    return d
+
+
+def main_job(d):
+    return [j for k, j in d["jobs"].items() if k != "gate"][0]                  # "gate" only decides whether the real job runs
+
+
+def steps(d):
+    return main_job(d)["steps"]
+
+
+def test_aladin_nightly_triggers_limits_and_order():
+    d = load("aladin.yml")
+    on = d["on"]
+    assert "workflow_dispatch" in on and "workflow_run" not in on     # started explicitly by Daily update: run-after triggers never fire for heartbeat-started runs
+    job = main_job(d)
+    assert job["timeout-minutes"] == 150
+    assert d["permissions"] == {"contents": "write", "actions": "write"} and d["concurrency"] == {"group": "aladin", "cancel-in-progress": False}
+    daily = " ".join(st.get("run", "") for st in load("daily-update.yml")["jobs"]["update"]["steps"])
+    assert "gh workflow run aladin.yml" in daily
+    assert any("gh workflow run aladin2.yml" in st.get("run", "") for st in steps(d))
+    runs = [s.get("run", "") for s in steps(d)]
+    order = [next(i for i, r in enumerate(runs) if k in r) for k in ("aladin_fund.py", "aladin_filings.py", "aladin_model.py", "paper_trader.py")]
+    assert order == sorted(order)
+    limits = {s["name"].split(" (")[0]: s.get("timeout-minutes") for s in steps(d) if "name" in s}
+    assert limits["Fundamental front"] == 30 and limits["Filings tone and alternative data"] == 20 and limits["Probabilities"] == 90
+    uses = " ".join(s.get("uses", "") for s in steps(d))
+    assert "actions/cache/restore" in uses and "actions/cache/save" in uses
+
+
+def test_every_step_except_checkout_and_python_may_fail():
+    for name in ("aladin.yml", "aladin-sentiment.yml"):
+        for s in steps(load(name)):
+            if s.get("uses", "").startswith(("actions/checkout", "actions/setup-python")):
+                continue
+            assert s.get("continue-on-error") is True, (name, s.get("name"))
+
+
+def test_commit_step_uses_skip_ci_the_bot_identity_and_the_pull_rebase_push_pattern():
+    for name, paths in (("aladin.yml", ("data/aladin", "data/paper_trades")), ("aladin-sentiment.yml", ("data/aladin/sentiment.json",))):
+        save = [s for s in steps(load(name)) if "git commit" in s.get("run", "")][0]["run"]
+        assert "[skip ci]" in save and "github-actions[bot]" in save and "git pull --rebase" in save and "git push origin HEAD:main" in save
+        assert all(p in save for p in paths) and "--force" not in save and ".env" not in save and "live_extra" not in save
+
+
+def test_nightly_installs_the_aladin_requirements_and_restores_the_terminal_cache_and_history():
+    runs = " ".join(s.get("run", "") for s in steps(load("aladin.yml")))
+    assert "requirements-aladin.txt" in runs and "origin history" in runs
+    caches = [s for s in steps(load("aladin.yml")) if s.get("uses", "").startswith("actions/cache/restore")]
+    assert any(s["with"]["key"].startswith("terminal-") or "terminal-" in str(s["with"].get("restore-keys", "")) for s in caches)
+    assert any("aladin-cache-" in str(s["with"].get("restore-keys", "")) for s in caches)
+
+
+def test_heartbeat_fires_the_sentiment_workflow_and_globe_workflow_runs_geo():
+    clock = (W / "market-clock.yml").read_text(encoding="utf-8")
+    assert "fire aladin-sentiment.yml" in clock and "fire globe-data.yml" in clock and "fire live-prices.yml" in clock
+    globe = " ".join(s.get("run", "") for s in steps(load("globe-data.yml")))
+    assert "geo_tension.py" in globe and "data/aladin/geo.json" in globe
+    daily = " ".join(s.get("run", "") for s in steps(load("daily-update.yml")))
+    assert "terminal_fund.py" in daily and "check_houses.py" in daily
+
+
+def test_nexus_workflow_reads_filings_then_derives_shares_then_geocodes_and_audits_before_saving():
+    d = load("nexus.yml")
+    runs = [s.get("run", "") for s in steps(d)]
+    order = [next(i for i, r in enumerate(runs) if k in r) for k in ("nse_eod.py", "revenue_profile.py", "revenue_graph_builder.py", "related_party_shares.py", "geocode_facilities.py", "check_graph.py")]   # the dependency profile gets the fresh daily quota
+    assert order == sorted(order)
+    step = next(s for s in steps(d) if "related_party_shares.py" in s.get("run", ""))
+    assert step["continue-on-error"] is True and step["timeout-minutes"] == 60 and "--limit 40" in step["run"]
+    assert {"GROQ_API_KEY", "GEMINI_API_KEY", "GROQ_API_KEY_1", "GEMINI_API_KEY_1"} <= set(step["env"])
+
+
+def test_nexus_saves_the_graph_only_after_its_audit_and_the_profiles_every_run():
+    d = load("nexus.yml")
+    audit = next(s for s in steps(d) if "check_graph.py" in s.get("run", ""))
+    save = next(s for s in steps(d) if "git push" in s.get("run", ""))
+    assert audit["id"] == "audit" and audit["continue-on-error"] is True
+    assert save["if"] == "always()" and save["env"]["AUDIT"] == "${{ steps.audit.outcome }}"
+    run = save["run"]
+    assert 'if [ "$AUDIT" = "success" ]; then git add data/supply_graph.json; fi' in run
+    assert run.index("git checkout -- data/supply_graph.json") < run.index("dependency_profile.py"), "a rejected graph is put back before the dependency profile is built"
+    for f in ("revenue_profile.json", "brsr_profile.json", "dependencies.json"):
+        assert f"data/{f}" in run
+    assert "[skip ci]" in run and "--force" not in run

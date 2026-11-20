@@ -1,0 +1,171 @@
+# B-Lab research desk (docs/blab/PLAN.md): the four divisions run AT THE SAME TIME as separate jobs (Fundamental, Technical,
+# Macro, Sentiment; inside each, its bots run in parallel too), then one job collects them, adds new findings to the ledger,
+# scores the older ones against the NIFTY 500 and saves data/blab/. The next Live prices run publishes it for lab.html.
+# Twice a day: after the evening daily update (21:00 IST) and before the market opens (08:15 IST). Standard library only,
+# except the Fundamental division: `requests` for NSE (through the repository's own NSE session) and a read-only copy of the
+# ALADIN statements cache. Scouts keep small rolling stores in data/blab/store/, saved by the collect job. The Macro job alone
+# receives the free FRED key (GitHub secret FRED_API_KEY); it is never written to a file or a log.
+# Free sources only (owner, 15 Nov 2026). Commits end in "[skip ci]" and touch nothing but data/blab/.
+name: B-Lab research desk
+
+on:
+  schedule:
+    - cron: "30 15 * * *"
+    - cron: "45 2 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [".github/workflows/blab.yml", "scripts/blab/**"]
+
+permissions:
+  contents: write
+  models: read        # GitHub Models' free tier for the Sentiment division's AI analyst (the workflow's own token)
+
+concurrency:
+  group: blab
+  cancel-in-progress: false
+
+jobs:
+  division:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        division: [fundamental, technical, macro, sentiment]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: NSE access for the Fundamental division
+        if: matrix.division == 'fundamental'
+        run: pip install requests==2.34.2
+      - name: Annual statements for the blind-spot analyst (read-only copy of the nightly ALADIN cache)
+        if: matrix.division == 'fundamental'
+        uses: actions/cache/restore@v4
+        continue-on-error: true
+        with:                                   # the SAME paths as aladin.yml saves: a cache only matches its exact path list
+          path: |
+            data/aladin_cache
+            ~/.cache/huggingface
+          key: blab-read-only-${{ github.run_id }}
+          restore-keys: aladin-cache-
+      - name: Prices and NSE access for the Technical division
+        if: matrix.division == 'technical'
+        run: pip install requests==2.34.2 numpy
+      - name: News, name matching and NSE access for the Sentiment division
+        if: matrix.division == 'sentiment'
+        run: pip install requests==2.34.2 rapidfuzz
+      - name: Daily prices for the Technical and Sentiment divisions (read-only copy of the daily job's cache)
+        if: matrix.division == 'technical' || matrix.division == 'sentiment'
+        uses: actions/cache/restore@v4
+        continue-on-error: true
+        with:
+          path: data/terminal
+          key: blab-read-only-${{ github.run_id }}
+          restore-keys: terminal-
+      - name: Older price history (the daily job's "history" branch, NIFTY 50 from 2007, stocks from 1996)
+        if: matrix.division == 'technical'
+        continue-on-error: true
+        run: |
+          mkdir -p data/terminal/archive
+          git fetch -q --depth=1 origin history && git archive FETCH_HEAD | tar -x -C data/terminal/archive
+      - name: NIFTY 50 and Bank Nifty since 2007 for the macro analyst (two files from the "history" branch)
+        if: matrix.division == 'macro'
+        continue-on-error: true
+        run: |
+          mkdir -p data/terminal/archive
+          git fetch -q --depth=1 origin history && git archive FETCH_HEAD _5eNSEI.json _5eNSEBANK.json | tar -x -C data/terminal/archive
+      - name: Run the ${{ matrix.division }} division
+        continue-on-error: true
+        env:                                                                                   # each free key reaches only the job that uses it
+          FRED_API_KEY: ${{ matrix.division == 'macro' && secrets.FRED_API_KEY || '' }}
+          GROQ_API_KEY: ${{ matrix.division == 'sentiment' && secrets.GROQ_API_KEY || '' }}
+          GROQ_API_KEY_1: ${{ matrix.division == 'sentiment' && secrets.GROQ_API_KEY_1 || '' }}
+          GROQ_API_KEY_2: ${{ matrix.division == 'sentiment' && secrets.GROQ_API_KEY_2 || '' }}
+          GEMINI_API_KEY: ${{ matrix.division == 'sentiment' && secrets.GEMINI_API_KEY || '' }}
+          GEMINI_API_KEY_1: ${{ matrix.division == 'sentiment' && secrets.GEMINI_API_KEY_1 || '' }}
+          GEMINI_API_KEY_2: ${{ matrix.division == 'sentiment' && secrets.GEMINI_API_KEY_2 || '' }}
+          GEMINI_API_KEY_3: ${{ matrix.division == 'sentiment' && secrets.GEMINI_API_KEY_3 || '' }}
+          GITHUB_MODELS_TOKEN: ${{ matrix.division == 'sentiment' && github.token || '' }}
+        run: python scripts/blab/run.py --division ${{ matrix.division }} --out blab_${{ matrix.division }}.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: blab-${{ matrix.division }}
+          path: blab_${{ matrix.division }}.json
+          if-no-files-found: warn
+          retention-days: 3
+      - uses: actions/upload-artifact@v4          # only the division that writes a store uploads it (others hold stale copies)
+        if: always() && matrix.division == 'fundamental'
+        with:
+          name: blab-store-fundamental
+          path: |
+            data/blab/store/shareholding.json
+            data/blab/store/sast29.json
+            data/blab/store/announcements.json
+          if-no-files-found: warn
+          retention-days: 3
+      - uses: actions/upload-artifact@v4
+        if: always() && matrix.division == 'sentiment'
+        with:
+          name: blab-store-sentiment
+          path: |
+            data/blab/store/news_us.json
+            data/blab/store/news_sectors.json
+            data/blab/store/ai_news.json
+            data/blab/store/events_hist.json
+          if-no-files-found: warn
+          retention-days: 3
+      - uses: actions/upload-artifact@v4
+        if: always() && matrix.division == 'macro'
+        with:
+          name: blab-store-macro
+          path: |
+            data/blab/store/fred.json
+            data/blab/store/rbi.json
+          if-no-files-found: warn
+          retention-days: 3
+      - uses: actions/upload-artifact@v4
+        if: always() && matrix.division == 'technical'
+        with:
+          name: blab-store-technical
+          path: |
+            data/blab/store/deals.json
+            data/blab/store/strategy_lab.json
+          if-no-files-found: warn
+          retention-days: 3
+
+  collect:
+    needs: division
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: blab-*
+          merge-multiple: true
+          path: .
+      - name: Put the Fundamental stores back in place
+        run: |
+          mkdir -p data/blab/store
+          for f in shareholding.json sast29.json announcements.json deals.json strategy_lab.json fred.json rbi.json news_us.json news_sectors.json ai_news.json events_hist.json; do [ -f "$f" ] && mv -f "$f" data/blab/store/ || true; done
+      - name: Collect, score and write data/blab (the scouts' stores came back in data/blab/store/)
+        run: python scripts/blab/run.py --collect blab_*.json
+      - name: Save data/blab to the repository (the next Live prices run publishes it)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/blab
+          if git diff --cached --quiet; then
+            echo "Nothing new to save."
+          else
+            git commit -q -m "B-Lab research desk: $(date -u +%Y-%m-%d\ %H:%M) UTC [skip ci]"
+            for i in 1 2 3; do git pull --rebase origin main && git push origin HEAD:main && break; sleep 10; done
+          fi

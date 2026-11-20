@@ -1,0 +1,140 @@
+{
+  "session_date": "2026-09-29",
+  "source": {
+    "session_file": "https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_29092026.csv",
+    "universe": "https://niftyindices.com/IndexConstituent/ind_nifty500list.csv",
+    "universe_source": "downloaded"
+  },
+  "settings": {
+    "picks": {
+      "gainers_count": 3,
+      "losers_count": 3
+    },
+    "filters": {
+      "universe_name": "NIFTY 500",
+      "universe_url": "https://niftyindices.com/IndexConstituent/ind_nifty500list.csv",
+      "series": [
+        "EQ"
+      ],
+      "min_price": 50,
+      "min_turnover_crore": 10,
+      "max_abs_move_pct": 30,
+      "min_history_years": 1,
+      "exclude_prefixes": [
+        "DUMMY"
+      ],
+      "exclude_symbols": []
+    }
+  },
+  "universe_count": 494,
+  "eligible_count": 462,
+  "gainers": [
+    {
+      "group": "gainer",
+      "rank": 1,
+      "label": "Top Gainer #1",
+      "symbol": "KIRLOSENG",
+      "yahoo_ticker": "KIRLOSENG.NS",
+      "name": "Kirloskar Oil Eng Ltd.",
+      "industry": "Capital Goods",
+      "prev_close": 2141.2,
+      "open": 2141.2,
+      "high": 2444.0,
+      "low": 2124.3,
+      "close": 2402.0,
+      "pct_change": 12.1801,
+      "volume": 5298949,
+      "turnover_crore": 1240.44
+    },
+    {
+      "group": "gainer",
+      "rank": 2,
+      "label": "Top Gainer #2",
+      "symbol": "CUPID",
+      "yahoo_ticker": "CUPID.NS",
+      "name": "Cupid Ltd.",
+      "industry": "Fast Moving Consumer Goods",
+      "prev_close": 264.5,
+      "open": 264.0,
+      "high": 292.25,
+      "low": 262.0,
+      "close": 288.0,
+      "pct_change": 8.8847,
+      "volume": 37060879,
+      "turnover_crore": 1036.91
+    },
+    {
+      "group": "gainer",
+      "rank": 3,
+      "label": "Top Gainer #3",
+      "symbol": "TDPOWERSYS",
+      "yahoo_ticker": "TDPOWERSYS.NS",
+      "name": "TD Power Systems Ltd.",
+      "industry": "Capital Goods",
+      "prev_close": 722.0,
+      "open": 719.0,
+      "high": 799.0,
+      "low": 714.0,
+      "close": 777.35,
+      "pct_change": 7.6662,
+      "volume": 7602887,
+      "turnover_crore": 579.34
+    }
+  ],
+  "losers": [
+    {
+      "group": "loser",
+      "rank": 1,
+      "label": "Top Loser #1",
+      "symbol": "POLICYBZR",
+      "yahoo_ticker": "POLICYBZR.NS",
+      "name": "PB Fintech Ltd.",
+      "industry": "Financial Services",
+      "prev_close": 1151.3,
+      "open": 1162.1,
+      "high": 1162.3,
+      "low": 1077.0,
+      "close": 1081.0,
+      "pct_change": -6.1061,
+      "volume": 19346053,
+      "turnover_crore": 2122.35
+    },
+    {
+      "group": "loser",
+      "rank": 2,
+      "label": "Top Loser #2",
+      "symbol": "COROMANDEL",
+      "yahoo_ticker": "COROMANDEL.NS",
+      "name": "Coromandel International Ltd.",
+      "industry": "Chemicals",
+      "prev_close": 1899.1,
+      "open": 1900.0,
+      "high": 1900.1,
+      "low": 1772.1,
+      "close": 1792.9,
+      "pct_change": -5.5921,
+      "volume": 374773,
+      "turnover_crore": 67.81
+    },
+    {
+      "group": "loser",
+      "rank": 3,
+      "label": "Top Loser #3",
+      "symbol": "AMBER",
+      "yahoo_ticker": "AMBER.NS",
+      "name": "Amber Enterprises India Ltd.",
+      "industry": "Consumer Durables",
+      "prev_close": 6990.0,
+      "open": 6915.5,
+      "high": 7001.0,
+      "low": 6606.5,
+      "close": 6606.5,
+      "pct_change": -5.4864,
+      "volume": 286219,
+      "turnover_crore": 193.31
+    }
+  ],
+  "skipped": [],
+  "fetched_at_utc": "2026-09-30T09:57:50+00:00",
+  "fetched_at_ist": "30 Sep 2026, 03:27 PM IST"
+}

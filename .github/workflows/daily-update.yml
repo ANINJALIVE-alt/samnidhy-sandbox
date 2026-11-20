@@ -1,0 +1,224 @@
+# Samnidhy Sandbox daily update.
+# Runs on GitHub's servers every evening and morning (your computer can be off):
+#   1. picks the last NSE session's top gainers/losers and recomputes everything (scripts/update.py)
+#   2. puts the data - or, if step 1 failed, the "Data not updated" notice - into the page
+#   3. saves the day's data in this repository (so past sessions are kept)
+#   4. re-runs the stock screen for the Advanced page (scripts/screener.py), saves NSE's FII/DII flows
+#      (scripts/institutional.py) and fetches prices, signals and market conditions
+#   5. publishes the site to GitHub Pages
+# If step 1 fails, the last good day stays on the site and this run is marked as failed,
+# so GitHub emails you. No API keys or secrets are needed for this data.
+name: Daily update
+
+on:
+  schedule:
+    # Times are UTC. Runs every day; on weekends and holidays it simply refreshes the last session.
+    # 13:30 UTC = 19:00 IST: the same day's session, once NSE has published its end-of-day file.
+    - cron: "30 13 * * *"
+    # 02:00 UTC = 07:30 IST: morning run, catches anything the evening run missed.
+    - cron: "0 2 * * *"
+    # 03:30 UTC = 09:00 IST: backup, in case GitHub started a run late or Yahoo was slow to publish.
+    - cron: "30 3 * * *"
+  workflow_dispatch: # adds a "Run workflow" button on the Actions tab
+  push: # a change to this schedule runs the update straight away
+    branches: [main]
+    paths: [".github/workflows/daily-update.yml"]
+
+permissions:
+  contents: write   # save the day's data in the repository
+  actions: write    # start ALADIN nightly when the data is saved
+  pages: write      # publish the website
+  id-token: write   # required by GitHub Pages publishing
+
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    concurrency:                # collecting data never blocks a publish; only the short publish job queues
+      group: daily-data
+      cancel-in-progress: false
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install Python packages
+        run: pip install -r requirements.txt
+
+      - name: Fetch the last session's movers and recompute everything
+        id: update
+        continue-on-error: true
+        run: python scripts/update.py
+
+      - name: Re-run the stock screen (Advanced page)
+        id: screen
+        continue-on-error: true   # on failure the last good screen stays in data/screener/latest.json
+        run: python scripts/screener.py
+
+      - name: FII / DII flows from NSE's daily report
+        continue-on-error: true   # if NSE can't be reached, the page keeps the days already saved
+        run: python scripts/institutional.py
+
+      - name: Prices, signals and market conditions for the screened stocks
+        continue-on-error: true
+        run: |
+          sleep 45   # let Yahoo's rate limit reset after the screen's ~350 requests
+          python scripts/live_technicals.py
+
+      # ---- Expert terminal: every NSE stock (NSE daily files, cached between runs) ----
+      - name: Restore the terminal's NSE data cache
+        uses: actions/cache/restore@v4
+        with:
+          path: data/terminal
+          key: terminal-${{ github.run_id }}
+          restore-keys: terminal-
+
+      - name: All NSE stocks from NSE's end-of-day files
+        continue-on-error: true
+        run: python scripts/nse_eod.py
+
+      - name: 5 years of split-adjusted daily candles for the terminal chart
+        continue-on-error: true
+        run: python scripts/terminal_hist.py
+
+      - name: Every Indian index (NSE's end-of-day file; BSE and Bitcoin from Yahoo) for the Indices tab
+        continue-on-error: true
+        run: python scripts/indices_eod.py
+
+      - name: ALADIN model E (momentum with a daily risk check; ranks, the paper account's fills at the next open, data/aladin_e)
+        continue-on-error: true
+        timeout-minutes: 15
+        run: python scripts/aladin_e.py
+
+      - name: ALADIN model E Friday report of the paper account (phase 7 rules; writes only for a Friday session, data/aladin_e/weekly)
+        continue-on-error: true
+        timeout-minutes: 5
+        run: python scripts/aladin_e_weekly.py
+
+      - name: Node for the Technicals gauge record (it runs the page's own chart-indicators.js)
+        continue-on-error: true
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Technicals gauge track record for the stock page's "Three questions" box (re-tests at most every 28 days, data/config/technicals_record.json)
+        continue-on-error: true
+        timeout-minutes: 10
+        run: node scripts/technicals_record.mjs
+
+      - name: Fundamentals for the terminal (NIFTY 500 daily, rest of the main board 1/5 per run, business-house members always)
+        continue-on-error: true
+        run: python scripts/terminal_fund.py
+
+      - name: Check the business-house list against today's NSE universe (reports renamed or delisted symbols; never blocks the deploy)
+        continue-on-error: true
+        run: python scripts/check_houses.py
+
+      - name: Delayed prices for all main-board stocks
+        continue-on-error: true
+        run: python scripts/terminal_live.py
+
+      - name: Replay library (NIFTY 50 1-minute candles, one file per trading day)
+        continue-on-error: true
+        run: python scripts/replay_data.py
+
+      - name: Save the terminal's NSE data cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: data/terminal
+          key: terminal-${{ github.run_id }}
+
+      - name: Deep intraday history for chart scroll-back ("intraday" branch, replaced daily)
+        continue-on-error: true
+        run: |
+          python scripts/intraday_deep.py
+          cd data/terminal/deep
+          git init -q -b intraday
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Intraday history: 5-minute (60 days) and hourly (2 years), $(date -u +%Y-%m-%d)"
+          git push -q -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" intraday:intraday
+
+      - name: Older price history for the outlook model (history branch)
+        continue-on-error: true
+        run: |
+          mkdir -p data/terminal/archive
+          git fetch -q --depth=1 origin history && git archive FETCH_HEAD | tar -x -C data/terminal/archive
+
+      - name: Outlook model (retrained and walk-forward tested every day)
+        continue-on-error: true
+        run: python scripts/predict_model.py
+
+      - name: Financial news wire (India markets RSS + brutalist.report)
+        continue-on-error: true
+        run: python scripts/news_wire.py
+
+      - name: NSE's own live indices and movers (unofficial; supplements the delayed Yahoo prices)
+        continue-on-error: true
+        run: python scripts/nse_live_poll.py
+
+      - name: Put the data (or the "Data not updated" notice) into the page
+        env:
+          ALADIN_BOT_CODE: ${{ secrets.ALADIN_BOT_CODE }}      # encrypts the earlier ALADIN models for the bot (scripts/aladin2/legacy.py)
+        run: |
+          python scripts/embed_data.py
+          python scripts/build_site.py
+
+      - name: Save the day's data in the repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data dashboard.html advanced.html
+          if git diff --cached --quiet; then
+            echo "Nothing new to save."
+          else
+            session=$(python -c "import json; print(json.load(open('data/status.json')).get('session_date'))")
+            git commit -m "Daily update: session ${session} ($(date -u +%Y-%m-%d\ %H:%M) UTC)"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+
+      - name: "Start ALADIN nightly (explicit, because GitHub does not fire run-after triggers for runs the heartbeat started)"
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run aladin.yml --ref main
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Report a failed data update
+        if: steps.update.outcome == 'failure' || steps.screen.outcome == 'failure'
+        run: |
+          if [ "${{ steps.update.outcome }}" = "failure" ]; then
+            echo "::error::The movers update failed. The site kept the last good day and shows a 'Data not updated' notice. Open the step 'Fetch the last session's movers' above to see why."
+          fi
+          if [ "${{ steps.screen.outcome }}" = "failure" ]; then
+            echo "::error::The stock screen failed. The Advanced page kept the last good screen. Open the step 'Re-run the stock screen' above to see why."
+          fi
+          exit 1
+
+  publish:                      # a few seconds; the only part that waits its turn for GitHub Pages
+    needs: update
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    concurrency:
+      group: site-publish
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Publish to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4

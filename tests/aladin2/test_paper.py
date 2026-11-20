@@ -1,0 +1,208 @@
+import numpy as np
+import pandas as pd
+import pytest
+
+from scripts.aladin2 import costs as C
+from scripts.aladin2 import ledger as LG
+from scripts.aladin2 import paper as P
+
+CFG = C.load_cfg()
+CAL = pd.bdate_range("2026-01-05", periods=30)                 # Monday 5 Jan 2026 onwards
+
+
+def px(rows):
+    """rows: {day_index: (o, h, l, c)}; every other day is flat at 100."""
+    d = {i: (100.0, 100.5, 99.5, 100.0) for i in range(len(CAL))}; d.update(rows)
+    return pd.DataFrame([{"o": v[0], "h": v[1], "l": v[2], "c": v[3], "v": 1e6} for v in (d[i] for i in range(len(CAL)))], index=CAL)
+
+
+def book(stop=95.0, goal=108.0, adv=1_000_000):
+    return {"as_of": str(CAL[1].date()), "picks": [{"sym": "AAA", "rank": 0.995, "stop": stop, "goal": goal, "adv_shares": adv, "decile": 2, "sector": "IT"}]}     # signal day index 1, entry day index 2
+
+
+def run(prices, exits=("stop", "time"), **kw):
+    return P.simulate([book(**kw)], {"AAA": prices}, CAL, CFG, exits=exits)
+
+
+def test_entry_is_the_next_open_and_the_time_exit_is_the_open_of_the_fifth_day_after():
+    r = run(px({2: (101.0, 102.0, 100.0, 101.5), 7: (104.0, 105.0, 103.0, 104.5)}))
+    t = r["trades"][0]; assert t["entry"] == 101.0 and t["entry_date"] == str(CAL[2].date()) and t["exit_date"] == str(CAL[7].date()) and t["exit"] == 104.0 and t["reason"] == "time" and t["days"] == 5
+    assert t["net"] == pytest.approx(t["gross"] - t["costs"]) and t["costs"] > 0 and t["gross"] == pytest.approx(t["qty"] * 3.0)
+
+
+def test_a_stop_fills_at_the_stop_inside_the_day_and_at_the_open_when_the_stock_gaps_through_it():
+    r = run(px({3: (100.0, 100.5, 94.0, 96.0)})); t = r["trades"][0]; assert t["reason"] == "stop" and t["exit"] == 95.0 and t["exit_date"] == str(CAL[3].date())
+    g = run(px({3: (92.0, 93.0, 90.0, 91.0)}))["trades"][0]; assert g["reason"] == "stop" and g["exit"] == 92.0                       # opened under the stop: out at the open, a worse price than the stop
+
+
+def test_the_target_is_only_an_order_when_the_rules_say_so_and_the_stop_wins_a_day_that_touches_both():
+    prices = px({3: (100.0, 109.0, 99.0, 108.0)})
+    assert run(prices, exits=("stop", "time"))["trades"][0]["reason"] == "time"                                                      # target is information, not an order
+    assert run(prices, exits=("stop", "goal", "time"))["trades"][0]["exit"] == 108.0
+    both = px({3: (100.0, 109.0, 94.0, 100.0)}); t = run(both, exits=("stop", "goal", "time"))["trades"][0]; assert t["reason"] == "stop" and t["exit"] == 95.0             # touched both: the cautious reading
+
+
+def test_size_follows_the_risk_rules_and_cash_never_goes_negative():
+    r = run(px({}), stop=95.0); op = r["trades"][0]; eq0 = P.START_CASH
+    assert op["qty"] * (op["entry"] - op["stop"]) <= eq0 * 0.0101 and op["qty"] * op["entry"] <= eq0 * 0.1001                       # 1% of equity at risk, at most 10% in one stock
+    assert all(row[2] >= 0 for row in r["equity"])
+    tiny = run(px({}), adv=10)["skipped"]; assert tiny and "size 0" in tiny[0]["why"]                                                  # 5% of 10 shares is zero shares
+
+
+def test_a_pick_that_opens_at_or_below_its_stop_is_skipped_and_says_why():
+    r = run(px({2: (94.0, 95.0, 93.0, 94.0)})); assert not r["trades"] and r["skipped"][0]["why"] == "opened at or below the stop"
+
+
+def test_equity_is_cash_plus_open_positions_at_the_close_and_a_trade_in_flight_is_reported():
+    r = P.simulate([book()], {"AAA": px({4: (101.0, 103.0, 100.5, 102.0)})}, CAL, CFG, end=str(CAL[4].date()))
+    assert r["open"] and r["open"][0]["sym"] == "AAA" and r["open"][0]["last"] == 102.0 and r["open"][0]["days_left"] == 3 and not r["trades"]
+    row = r["equity"][-1]; assert row[3] == 1 and row[1] == pytest.approx(row[2] + r["open"][0]["qty"] * 102.0)
+
+
+def test_live_books_only_count_friday_books_written_before_the_entry_open(tmp_path):
+    def wk(d, created, levels=True):
+        return {"t": "wk", "d": d, "H": 5, "created": created, "buy": [["AAA", 100.0, 0.995]], "sell": [], "universe": 1000, "weekday_validated": True, **({"levels": {"AAA": [95.0, 108.0, 2.5, 500000]}} if levels else {})}
+    for rec in (wk("2026-10-09", "2026-10-10T20:00:00+00:00"), wk("2026-10-16", "2026-10-17T20:00:00+00:00"), wk("2026-10-15", "2026-10-15T20:00:00+00:00"), wk("2026-10-23", "2026-10-26T06:00:00+00:00")):
+        LG.append(rec, tmp_path)
+    got = P.live_books(tmp_path, CFG); assert [b["as_of"] for b in got] == ["2026-10-09", "2026-10-16"]                              # 10-15 is a Thursday, 10-23 was written after Monday's open
+    assert got[0]["picks"][0]["stop"] == 95.0 and got[0]["picks"][0]["goal"] == 108.0
+
+
+def test_stats_on_a_known_account():
+    r = {"equity": [["2026-01-05", 1_000_000, 1_000_000, 0], ["2026-01-06", 1_100_000, 900_000, 1], ["2026-01-07", 990_000, 990_000, 0]], "trades": [{"net": 10000, "ret_pct": 1.0, "costs": 100, "days": 3, "reason": "time"}, {"net": -20000, "ret_pct": -2.0, "costs": 100, "days": 5, "reason": "stop"}]}
+    s = P.stats(r); assert s["pnl"] == -10000 and s["max_drawdown_pct"] == -10.0 and s["win_rate"] == 0.5 and s["exits"]["stop"] == 1 and s["profit_factor"] == 0.5 and s["costs_paid"] == 200
+
+
+def test_published_paper_files_use_no_banned_word_and_state_their_kind():
+    import re
+    from pathlib import Path
+    for f in (P.OUT / "backtest.json", P.OUT / "live.json"):
+        if not f.exists():
+            continue
+        txt = f.read_text(encoding="utf-8"); assert not re.search(r"(buy|sell|target|recommendation|guaranteed)", txt, re.I), f.name
+        assert ("HISTORICAL SIMULATION" in txt) if f.name == "backtest.json" else ("LIVE FRONT TEST" in txt)
+
+
+def test_live_calendar_does_not_stop_at_a_stale_index_file(monkeypatch):
+    stale = pd.Series(1.0, index=pd.bdate_range("2021-10-01", "2021-10-14"))                  # the GitHub runner's NIFTY file stopped here
+    fresh = pd.DataFrame({"o": 1.0, "h": 1.0, "l": 1.0, "c": 1.0, "v": 1.0}, index=pd.bdate_range("2026-10-01", "2026-10-16"))
+    monkeypatch.setattr(P.L, "load_index", lambda *a, **k: stale)
+    monkeypatch.setattr(P.L, "load_prices", lambda s, *a, **k: fresh if s == "RELIANCE" else None)
+    cal = P.trading_calendar({}, pd.Timestamp("2026-10-01"))
+    assert cal[0] == pd.Timestamp("2026-10-01") and cal[-1] == pd.Timestamp("2026-10-16") and len(cal) == 12
+
+
+def test_front_test_timeline_marks_each_friday_in_time_late_missed_or_waiting():
+    lines = [{"t": "wk", "d": "2026-10-09", "created": "2026-10-09T14:10:00+00:00", "buy": [["AAA", 100, 0.995], ["BBB", 50, 0.991]]},
+             {"t": "wk", "d": "2026-10-16", "created": "2026-10-19T05:00:00+00:00", "buy": [["CCC", 10, 0.993]]}]       # written after Monday's open: late
+    trades = [{"as_of": "2026-10-09", "net": 500.0}, {"as_of": "2026-10-09", "net": -200.0}]
+    t = P.timeline(lines, trades, [], "2026-10-06", today="2026-10-30")
+    st = {w["friday"]: w["status"] for w in t["weeks"]}
+    assert st == {"2026-10-09": "in time", "2026-10-16": "late", "2026-10-23": "missed", "2026-10-30": "waiting"}
+    w = t["weeks"][0]; assert (w["closed"], w["wins"], w["net"], w["entry_day"]) == (2, 1, 300.0, "2026-10-12")
+    assert t["closed_trades"] == 2 and t["progress"] == 0.02 and t["next_book"] == "2026-10-30" and t["next_entry"] == "2026-11-02"
+
+
+def test_rule_v3_ignores_the_stop_holds_five_days_and_idle_cash_earns_the_fund_rate():
+    prices = {"AAA": px({3: (100.0, 100.5, 90.0, 92.0)})}                                         # day 3 trades far below the 95 stop
+    rate = pd.Series({pd.Timestamp("2025-12-01"): 6.3})                                              # 6.3% a year, minus the 0.30% fund fee = 6.0%
+    r = P.run_bot([book()], prices, CAL, CFG, rate)
+    t = r["trades"][0]; assert t["reason"] == "time" and t["days"] == 5                           # v2 would have left at the stop on day 3
+    no_fund = P.simulate([book()], prices, CAL, CFG, exits=P.BOT["exits"], risk_pct=2.0, max_pos_pct=20.0)
+    gain = r["equity"][-1][1] - no_fund["equity"][-1][1]
+    days = len(r["equity"]) - 1; assert gain > 0 and gain == pytest.approx(sum(row[2] for row in no_fund["equity"][:-1]) * 0.06 / 252, rel=0.02)
+    assert P.RULES["risk_per_trade_pct"] == 2.0 and P.RULES["max_position_pct"] == 20 and any(h["v"] == 3 for h in P.RULE_HISTORY) and P.RULE_HISTORY[-1]["v"] == "5.1" and P.BOT["roll"] and P.BOT["brake_pct"] == 10.0 and days > 0
+
+
+def test_fund_rate_carries_the_last_known_month_forward():
+    rate = pd.Series({pd.Timestamp("2026-07-01"): 5.8}); d = P.fund_daily(pd.bdate_range("2026-10-01", periods=3), rate)
+    assert d.round(8).tolist() == [round(0.055 / 252, 8)] * 3
+
+
+def test_every_trade_and_open_position_says_how_much_money_it_used_and_what_limited_its_size():
+    r = run(px({2: (101.0, 102.0, 100.0, 101.5), 7: (104.0, 105.0, 103.0, 104.5)})); t = r["trades"][0]
+    assert t["capital"] == pytest.approx(t["qty"] * 101.0) and t["pct_of_account"] == pytest.approx(t["capital"] / P.START_CASH * 100, abs=0.01)
+    assert t["cost_in"] + t["cost_out"] == pytest.approx(t["costs"], abs=0.02) and t["exit_value"] == pytest.approx(t["qty"] * 104.0)
+    assert t["risk_to_stop"] == pytest.approx(t["qty"] * (101.0 - 95.0)) and t["sized_by"] in ("risk per trade", "max position size", "liquidity", "fractional Kelly (edge too small)")
+    o = P.simulate([book()], {"AAA": px({})}, CAL, CFG, end=str(CAL[4].date()))["open"][0]
+    assert o["capital"] == pytest.approx(o["qty"] * o["entry"]) and o["value_now"] == pytest.approx(o["qty"] * o["last"]) and o["exit_due"] == str(CAL[7].date())
+
+
+def test_the_small_account_uses_the_same_rules_with_its_own_budget_whole_shares_and_the_dp_charge():
+    prices = px({2: (101.0, 102.0, 100.0, 101.5), 7: (104.0, 105.0, 103.0, 104.5)})
+    big = P.simulate([book()], {"AAA": prices}, CAL, CFG, exits=("time",), risk_pct=2.0, max_pos_pct=20.0)["trades"][0]
+    sm = P.simulate([book()], {"AAA": prices}, CAL, CFG, cash0=10_000, exits=("time",), risk_pct=2.0, max_pos_pct=20.0, sell_fee=15.93)["trades"][0]
+    assert 0 < sm["qty"] <= 19 and sm["capital"] <= 10_000 * 0.20 and big["qty"] > 100 * sm["qty"]                     # at most 19 whole shares (20% of Rs 10,000 at Rs 101); the smallest cap wins
+    assert sm["cost_out"] == pytest.approx(float(C.leg_cost("sell", sm["qty"] * 104.0, "delivery", 2, CFG)["total"]) + 15.93, abs=0.01)
+    dear = P.simulate([book()], {"AAA": px({2: (2500.0, 2510.0, 2490.0, 2500.0)})}, CAL, CFG, cash0=10_000, exits=("time",), risk_pct=2.0, max_pos_pct=20.0)
+    assert not dear["trades"] and not dear["open"] and "size 0" in dear["skipped"][0]["why"]                                # one share costs more than the per-stock cap
+
+
+def test_the_small_account_only_counts_lists_from_its_own_first_friday(monkeypatch, tmp_path):
+    early = {"as_of": "2026-10-09", "picks": []}; late = {"as_of": "2026-10-16", "picks": []}
+    monkeypatch.setattr(P, "live_books", lambda *a, **k: [early, late]); monkeypatch.setattr(P, "trading_calendar", lambda *a, **k: pd.bdate_range("2026-10-05", "2026-10-13"))
+    monkeypatch.setattr(P, "run_bot", lambda books, *a, **k: (_ for _ in ()).throw(AssertionError(books)) if any(b["as_of"] < "2026-10-16" for b in books) else {"equity": [["2026-10-13", 10_000, 10_000, 0]], "trades": [], "open": [], "skipped": []})
+    monkeypatch.setattr(P, "india_rate", lambda refresh=False: pd.Series(dtype=float)); monkeypatch.setattr(P.LG, "read_all", lambda *a: [])
+    d = P.run_live(str(tmp_path), str(tmp_path / "s.json"), small=True)
+    assert d["books_used"] == ["2026-10-16"] and d["rules"]["budget_inr"] == 10_000 and d["rules"]["dp_charge_per_sale_inr"] == 15.93
+
+
+def test_a_short_pick_is_a_futures_short_and_the_protective_stop_closes_a_runaway_trade():
+    short = {"as_of": str(CAL[1].date()), "picks": [{"sym": "AAA", "side": "short", "rank": 0.01, "stop": 105.0, "goal": None, "adv_shares": 1_000_000, "decile": 2, "sector": "IT", "atr": 2.0}]}
+    r = P.simulate([short], {"AAA": px({7: (96.0, 96.5, 95.5, 96.0)})}, CAL, CFG, exits=("time",), risk_pct=2.0, max_pos_pct=20.0, protect_atr=3.0)
+    t = r["trades"][0]; assert t["side"] == "short" and t["reason"] == "time" and t["exit"] == 96.0 and t["gross"] == pytest.approx(t["qty"] * 4.0) and t["net"] < t["gross"]
+    assert t["capital"] <= P.START_CASH * 0.50 + 1                                                       # the short cap
+    run_away = P.simulate([short], {"AAA": px({4: (101.0, 107.0, 100.5, 106.0)})}, CAL, CFG, exits=("time",), risk_pct=2.0, max_pos_pct=20.0, protect_atr=3.0)["trades"][0]
+    assert run_away["reason"] == "protective stop" and run_away["exit"] == 106.0 and run_away["net"] < 0      # entry 100 + 3 x 2
+    longp = dict(book(), picks=[dict(book()["picks"][0], atr=2.0)])
+    lp = P.simulate([longp], {"AAA": px({4: (99.0, 99.5, 93.0, 94.0)})}, CAL, CFG, exits=("time",), risk_pct=2.0, max_pos_pct=20.0, protect_atr=3.0)["trades"][0]
+    assert lp["reason"] == "protective stop" and lp["exit"] == 94.0
+    eq = P.simulate([short], {"AAA": px({4: (100.0, 100.5, 97.5, 98.0)})}, CAL, CFG, exits=("time",), end=str(CAL[4].date()))
+    assert eq["open"][0]["side"] == "short" and eq["equity"][-1][1] > eq["equity"][-1][2]                    # a short in profit adds to the account value
+
+
+def test_the_v4_shadow_is_promoted_once_after_26_weeks_only_if_it_returned_more_without_a_deeper_fall(tmp_path, monkeypatch):
+    monkeypatch.setattr(P, "PROMOTE", tmp_path / "promote.json")
+    days = pd.bdate_range("2026-10-19", periods=27 * 5)
+    bot = {"equity": [[str(d.date()), 1_000_000 * (1 + 0.0004 * i), 0, 0] for i, d in enumerate(days)]}
+    better = {"equity": [[str(d.date()), 1_000_000 * (1 + 0.0006 * i), 0, 0] for i, d in enumerate(days)]}
+    assert P.shadow_check({"equity": better["equity"][:100]}, bot)["promoted"] is None                       # 20 weeks: too early
+    worse = {"equity": [[str(d.date()), 1_000_000 * (1 + 0.0002 * i), 0, 0] for i, d in enumerate(days)]}
+    assert P.shadow_check(worse, bot)["promoted"] is None
+    deep = {"equity": [r if i != 60 else [r[0], 700_000, 0, 0] for i, r in enumerate(better["equity"])]}
+    assert P.shadow_check(deep, bot)["promoted"] is None                                                     # more return but a deeper fall
+    out = P.shadow_check(better, bot)
+    assert out["promoted"] and out["shadow_return_pct"] > out["bot_return_pct"] and (tmp_path / "promote.json").exists()
+    assert P.promoted()["weeks"] == out["weeks"]
+
+
+def _books(weeks):
+    return [{"as_of": str(CAL[1 + 5 * k].date()), "picks": [{"sym": "AAA", "rank": 0.995, "stop": 95.0, "goal": None, "adv_shares": 1_000_000, "decile": 2, "sector": "IT", "atr": 2.0}]} for k in range(weeks)]
+
+
+def test_v5_roll_keeps_a_stock_that_is_still_on_the_list_instead_of_selling_and_buying_it_back():
+    plain = P.simulate(_books(3), {"AAA": px({})}, CAL, CFG, exits=("time",), risk_pct=2.0, max_pos_pct=20.0)
+    rolled = P.simulate(_books(3), {"AAA": px({})}, CAL, CFG, exits=("time",), risk_pct=2.0, max_pos_pct=20.0, roll=True)
+    assert len(plain["trades"]) == 3 and len(rolled["trades"]) == 1 and rolled["trades"][0]["days"] == 15
+    assert sum(t["costs"] for t in rolled["trades"]) < sum(t["costs"] for t in plain["trades"]) / 2      # one round trip instead of three
+
+
+def test_v5_trend_filter_brake_and_loss_limit():
+    off = P.simulate(_books(1), {"AAA": px({})}, CAL, CFG, exits=("time",), regime=lambda a: False)
+    assert not off["trades"] and "trend filter" in off["skipped"][0]["why"]
+    full = P.simulate(_books(1), {"AAA": px({})}, CAL, CFG, exits=("time",), risk_pct=2.0, max_pos_pct=20.0)["trades"][0]
+    half = P.simulate(_books(1), {"AAA": px({})}, CAL, CFG, exits=("time",), risk_pct=2.0, max_pos_pct=20.0, vol_scale=lambda a: 0.5)["trades"][0]
+    assert half["qty"] < 0.6 * full["qty"]                                                          # risk and per-stock cap halved (the Kelly cap is not scaled)
+    crash = px({k: (60.0, 61.0, 59.0, 60.0) for k in range(7, 30)})                                # a 40% loss on the first position
+    r = P.simulate(_books(4), {"AAA": crash}, CAL, CFG, exits=("time",), risk_pct=2.0, max_pos_pct=100.0, stop_pct=5.0, regime=lambda a: a < str(CAL[8].date()))
+    assert any("loss limit" in s["why"] for s in r["skipped"])
+
+
+def test_v5_market_filters_use_only_closes_up_to_the_list_friday_and_the_gates():
+    from scripts.aladin2 import v5 as V
+    d = pd.bdate_range("2020-01-01", periods=400); s = pd.Series(np.r_[np.linspace(100, 200, 300), np.linspace(200, 120, 100)], index=d)
+    reg, vs = V.market_filters(s)
+    assert reg(str(d[290].date())) and not reg(str(d[399].date())) and 0 < vs(str(d[399].date())) <= 1.0
+    base = {"max_drawdown_pct": -27.5, "cagr_pct": 20.8, "by_year_pct": {y: 5 for y in range(2013, 2026)}}
+    good = {"max_drawdown_pct": -20.0, "cagr_pct": 19.5, "by_year_pct": {y: 4 for y in range(2013, 2026)}}
+    assert V.judge(good, base, 1.0, 0.9)[1] and not V.judge({**good, "cagr_pct": 18.0}, base, 1.0, 0.9)[1]

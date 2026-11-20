@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.pyc
+
+# Secrets: API keys live in .env locally and in GitHub repository secrets, never in git
+.env
+.env.*
+!.env.example
+# Downloaded key files (OpenSky's credentials.json and the like): never in git
+*credentials*.json
+*client_secret*.json
+*clientsecret*.json
+
+# Raw price downloads: a cache the daily job rebuilds (new stocks every day would bloat git)
+data/raw/
+
+# Built website (GitHub Actions rebuilds and publishes it)
+site/
+
+# Screenshots for video editing (kept on this computer only)
+video_assets/
+
+# live prices change every 15 minutes; they are fetched fresh on GitHub, not stored
+data/screener/live.json
+
+# Private student data: never commit or publish
+*.xlsx
+*.xls
+private/
+# terminal data caches (rebuilt from NSE files; persisted by the Actions cache)
+data/terminal/
+
+# financial news wire: refetched on every run, not stored
+data/news/
+
+# NSE's own live numbers (unofficial poll); refreshed every run, not stored
+data/nse_live/
+
+# ALADIN: caches rebuilt by the workflows, and live ticks that are for the operator's own screen only (NSE's
+# website terms restrict redistributing them) - never committed, never published
+data/aladin_cache/
+data/live_extra/
+site_old/
+data/nexus_cache/
+
+node_modules/
+
+# local-only files (2026-11-20)
+local/logs/
+local/status.json
+local/scripmaster.json
+local/nifty100.json
+local/*.tmp

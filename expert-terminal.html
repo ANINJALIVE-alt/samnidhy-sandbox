@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B-LAB DESK · The B-Lab Cohort:</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#09090b">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<style>.locked { visibility: hidden; }</style>
+<!-- Public terminal (owner's decision 2026-10-12): no sign-in wall. Members can still sign in on auth.html; the ALADIN BOT console keeps its own access code. -->
+<script>window.expertUser = window.expertUser || { email: "Public desk", guest: true };</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="terminal.css">
+<link rel="stylesheet" href="terminal-fx.css">
+<link rel="stylesheet" href="terminal-guide.css">
+<script>
+  /* boot screen once per session; never with reduced motion */
+  try { if (!matchMedia("(prefers-reduced-motion: reduce)").matches && !sessionStorage.getItem("fx-boot")) { sessionStorage.setItem("fx-boot", "1"); document.documentElement.classList.add("fx-boot"); } } catch (e) { /* storage blocked: no boot screen */ }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/lightweight-charts@5.2.1/dist/lightweight-charts.standalone.production.js"></script>
+</head>
+<body>
+<!--TERMINAL-BODY-START-->
+<div class="desk" id="desk">
+
+  <!-- ================= masthead ================= -->
+  <header class="mast">
+    <div class="brand">
+      <a class="wordmark" href="#brief" data-go="brief">B-LAB DESK</a>
+      <span class="sub">NSE market intelligence · TAPMI · est. 2026</span>
+    </div>
+    <div class="cmdline" id="cmdline">
+      <span class="cmd-k">/</span>
+      <input id="cmd" type="text" autocomplete="off" spellcheck="false" placeholder="SYMBOL FUNCTION, e.g. RELIANCE CH · HELP for the list" aria-label="Command line" aria-autocomplete="list" aria-controls="cmd-list" aria-expanded="false" role="combobox">
+      <button type="button" class="cmd-go" id="cmd-go" aria-label="Run the command (same as Enter)">GO</button>
+      <kbd class="num" id="cmd-k">Ctrl K</kbd>
+      <ul class="cmd-list" id="cmd-list" role="listbox" aria-label="Command suggestions" hidden></ul>
+    </div>
+    <div class="mstats">
+      <span class="livechip" id="livechip"><i></i><b id="live-txt">LIVE</b></span>
+      <span class="asof-m" id="ms-asof" title="When the prices on this page were last updated">--</span>
+      <span class="ms-opt">STOCKS <b id="ms-stocks">--</b></span>
+      <span class="ms-opt">LIVE PRICES <b id="ms-live">--</b></span>
+      <span class="ms-ad">ADV / DEC <b id="ms-ad">--</b></span>
+      <span class="fresh" id="fresh" aria-label="Data freshness"><i class="p" id="fresh-p"></i><i class="g" id="fresh-g"></i><i class="n" id="fresh-n"></i></span>
+      <span class="clock" id="clock">--:--:-- IST</span>
+    </div>
+    <div class="acct">
+      <span class="who" title="Signed in"><span class="av" id="av">?</span><span id="sys-user">--</span></span>
+      <button class="btn-line" id="logout">Log off</button>
+      <a class="btn-ink" id="back" href="advanced.html#signals" title="Back to B-Lab (Esc)">← B-Lab</a>
+    </div>
+  </header>
+
+  <!-- ================= ticker chips ================= -->
+  <div class="tape" id="tape" aria-label="Market tape"><div class="tape-track" id="tape-track"></div></div>
+  <div class="crawl" id="crawl" aria-label="Headline crawl"><div class="crawl-track" id="crawl-track"></div></div>
+
+  <!-- ================= market regime ================= -->
+  <div class="regime" id="regime" aria-live="polite"></div>
+
+  <!-- ================= tabs ================= -->
+  <nav class="tabs" id="tabs" aria-label="Desk sections">
+    <button data-go="brief">Brief</button>
+    <button data-go="terminal">Terminal</button>
+    <button data-go="movers">Movers</button>
+    <button data-go="sectors">Sectors</button>
+    <button data-go="houses">Houses</button>
+    <button data-go="world">World</button>
+    <button data-go="indices">Indices</button>
+    <button data-go="crypto">Crypto</button>
+    <button data-go="map">Map</button>
+    <button data-go="outlook" data-legacy title="Earlier model: inside ALADIN BOT">Outlook</button>
+    <button data-go="signals">ALADIN</button>
+    <button data-go="a2bot" title="Locked: needs an access code">ALADIN BOT</button>
+    <button data-go="news">News</button>
+    <button data-go="lab" data-legacy title="Earlier model: inside ALADIN BOT">Tools</button>
+    <button data-go="sigold" data-legacy title="Earlier model: inside ALADIN BOT">Old weekly signal</button>
+    <button data-go="a2" data-legacy title="Earlier model: inside ALADIN BOT">ALADIN 2.0</button>
+    <span class="grow"></span>
+    <button class="tab-side" data-go="terminal" data-side="watch">Watchlist <b id="wl-count">0</b></button>
+    <button class="tab-side" id="setup-btn" title="Choose the stocks on your watchlist">Set up desk</button>
+  </nav>
+
+  <main class="views">
+
+    <!-- ================= BRIEF ================= -->
+    <section class="view" id="v-brief">
+      <div class="brief">
+        <div class="brief-head">
+          <p class="kick">— From the desk · live</p>
+          <h1>What happened <span class="acc">while you were away.</span></h1>
+          <p class="lede">Pick the one you came for. Everything is real NSE data; nothing is estimated.</p>
+          <p class="asof" data-asof="prices"></p>
+        </div>
+        <div class="statstrip" id="brief-stats"></div>
+        <div class="cards" id="brief-cards"></div>
+        <button class="skip" data-go="terminal">Skip to the full terminal →</button>
+      </div>
+    </section>
+
+    <!-- ================= TERMINAL ================= -->
+    <section class="view" id="v-terminal">
+      <div class="term">
+        <nav class="tools" id="tools" aria-label="Drawing tools">
+          <button data-tool="cursor" class="on" title="Cursor (Alt+C)"><svg viewBox="0 0 20 20"><path d="M10 3v14M3 10h14" stroke="currentColor" stroke-width="1.6"/></svg></button>
+          <button data-tool="trend" title="Trend line (Alt+T)"><svg viewBox="0 0 20 20"><path d="M4 16 16 4" stroke="currentColor" stroke-width="1.6"/><circle cx="4" cy="16" r="1.8" fill="currentColor"/><circle cx="16" cy="4" r="1.8" fill="currentColor"/></svg></button>
+          <button data-tool="ray" title="Ray"><svg viewBox="0 0 20 20"><path d="M4 16 19 1" stroke="currentColor" stroke-width="1.6"/><circle cx="4" cy="16" r="1.8" fill="currentColor"/><circle cx="10" cy="10" r="1.8" fill="currentColor"/></svg></button>
+          <button data-tool="ext" title="Extended line"><svg viewBox="0 0 20 20"><path d="M1 19 19 1" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="13" r="1.8" fill="currentColor"/><circle cx="13" cy="7" r="1.8" fill="currentColor"/></svg></button>
+          <button data-tool="hline" title="Horizontal line (Alt+H)"><svg viewBox="0 0 20 20"><path d="M1 10h18" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="10" r="1.8" fill="currentColor"/></svg></button>
+          <button data-tool="hray" title="Horizontal ray"><svg viewBox="0 0 20 20"><path d="M6 10h13" stroke="currentColor" stroke-width="1.6"/><circle cx="6" cy="10" r="1.8" fill="currentColor"/></svg></button>
+          <button data-tool="vline" title="Vertical line (Alt+V)"><svg viewBox="0 0 20 20"><path d="M10 1v18" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="10" r="1.8" fill="currentColor"/></svg></button>
+          <span class="t-sep"></span>
+          <button data-tool="fib" title="Fib retracement (Alt+F)"><svg viewBox="0 0 20 20"><path d="M2 3h16M2 8h16M2 12h16M2 17h16" stroke="currentColor" stroke-width="1.3"/></svg></button>
+          <button data-tool="rect" title="Rectangle (Alt+R)"><svg viewBox="0 0 20 20"><rect x="3" y="5" width="14" height="10" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
+          <button data-tool="range" title="Price range: measure change and bars (Alt+M)"><svg viewBox="0 0 20 20"><path d="M10 2v16M6 6l4-4 4 4M6 14l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+          <button data-tool="text" title="Text note"><svg viewBox="0 0 20 20"><path d="M4 4h12M10 4v13" stroke="currentColor" stroke-width="1.8"/></svg></button>
+          <span class="t-sep"></span>
+          <button data-act="magnet" id="magnet" title="Magnet: snap to open/high/low/close"><svg viewBox="0 0 20 20"><path d="M5 3v7a5 5 0 0 0 10 0V3h-3v7a2 2 0 0 1-4 0V3z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+          <button data-act="stay" id="stay" title="Stay in drawing mode"><svg viewBox="0 0 20 20"><path d="M6 9V6a4 4 0 0 1 8 0v3M4 9h12v8H4z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+          <button data-act="hide" id="hide-draw" title="Hide / show drawings"><svg viewBox="0 0 20 20"><path d="M2 10s3-5 8-5 8 5 8 5-3 5-8 5-8-5-8-5z" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="10" r="2.2" fill="currentColor"/></svg></button>
+          <button data-act="undo" title="Undo (Ctrl+Z)"><svg viewBox="0 0 20 20"><path d="M7 5 3 9l4 4M3 9h9a5 5 0 0 1 0 10H9" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+          <button data-act="clear" title="Remove all drawings on this stock"><svg viewBox="0 0 20 20"><path d="M4 6h12M8 6V3h4v3M6 6l1 11h6l1-11" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+          <span class="t-sep"></span>
+          <button data-act="zoomin" title="Zoom in">+</button>
+          <button data-act="zoomout" title="Zoom out">&minus;</button>
+          <button data-act="fit" title="Fit all data">&#8596;</button>
+        </nav>
+
+        <div class="chartcard">
+          <div class="cc-head" id="cc-head"></div>
+          <div class="cc-bar">
+            <button class="tb-sym" id="tb-sym" title="Change symbol (/)">—</button>
+            <div class="seg" id="iv-grp" role="group" aria-label="Timeframe">
+              <button data-iv="1m">1m</button><button data-iv="5m">5m</button><button data-iv="15m">15m</button><button data-iv="1h">1h</button>
+              <button data-iv="D" class="on">D</button><button data-iv="W">W</button><button data-iv="M">M</button>
+              <span class="dd" id="iv-dd"><button id="iv-more" title="All timeframes: seconds, minutes, hours, days">▾</button><div class="dd-menu iv-menu" id="iv-menu" hidden></div></span>
+            </div>
+            <div class="dd" id="ct-dd">
+              <button class="btn-line sm" id="ct-btn" aria-haspopup="true" aria-expanded="false">Candles ▾</button>
+              <div class="dd-menu" id="ct-menu" hidden></div>
+            </div>
+            <button class="btn-line sm" id="ind-open" title="Add indicators">ƒx <span class="tx">Indicators</span> <b id="ind-cnt"></b></button>
+            <button class="btn-line sm rp-btn" id="rp-open" title="Replay a past trading day minute by minute (real NSE 1-minute prices)">▶ <span class="tx">Replay</span></button>
+            <button class="btn-line sm" id="cmp-open" title="Compare with NIFTY, BANK NIFTY, SENSEX or another stock">⊕ <span class="tx">Compare</span></button>
+            <span class="grow"></span>
+            <button class="btn-line sm icon-lg" id="snap" title="Save the chart as an image">⤓ <span class="tx wide">Snapshot</span></button>
+            <button class="btn-line sm icon-lg" id="fs" title="Focus: hide the side panel">⛶ <span class="tx wide">Focus</span></button>
+            <button class="btn-line sm icon-lg" id="wl-toggle" title="Add or remove this stock from your watchlist">☆ <span class="tx wide">Watchlist</span></button>
+          </div>
+          <div class="stage">
+            <div class="chart" id="chart"></div>
+            <div class="chart-msg" id="chart-msg"></div>
+          </div>
+          <div class="cc-foot">
+            <div class="seg flat" id="rg-grp">
+              <button data-rg="1D">1D</button><button data-rg="5D">5D</button><button data-rg="1M">1M</button><button data-rg="3M">3M</button>
+              <button data-rg="6M">6M</button><button data-rg="YTD">YTD</button><button data-rg="1Y" class="on">1Y</button><button data-rg="5Y">5Y</button><button data-rg="ALL">All</button>
+            </div>
+            <label class="goto" title="Go to a date"><span class="tx wide">Go to</span><input type="date" id="goto"></label>
+            <span class="grow"></span>
+            <span class="mut" id="src-note"></span>
+            <span class="mut tx wide">IST</span>
+            <div class="seg flat" id="sc-grp"><button data-sc="pct" title="Percentage scale">%</button><button data-sc="log" title="Log scale">log</button><button data-sc="auto" class="on" title="Auto scale">auto</button></div>
+          </div>
+        </div>
+
+        <aside class="rail">
+          <div class="gutter gutter-v" id="g-rail" role="separator" aria-orientation="vertical" aria-label="Resize the side panel (drag, or use the arrow keys; double-click to reset)" tabindex="0"></div>
+          <div class="rail-h" id="watch-h"><span>Watchlist</span><button class="btn-line sm" id="wl-add" title="Add a stock to the watchlist">+ Add</button></div>
+          <div class="rail-watch">
+            <div class="wl-cols"><span>Symbol</span><span>Last</span><span>Chg%</span></div>
+            <div class="wl" id="watch"></div>
+          </div>
+          <div class="gutter gutter-h" id="g-watch" role="separator" aria-orientation="horizontal" aria-label="Resize the watchlist (drag, or use the arrow keys; double-click to reset)" tabindex="0"></div>
+          <div class="rail-tabs" id="rail-tabs"><button data-side="details" class="on">Details</button><button data-side="prints">Prints</button><button class="rail-wide" id="rail-wide" title="Widen the side panel" aria-pressed="false">⇔</button></div>
+          <div class="rail-view" data-side="details"><div class="details" id="details"></div></div>
+          <div class="rail-view" data-side="prints" hidden><div class="prints-wrap" id="prints"></div></div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ================= MOVERS ================= -->
+    <section class="view" id="v-movers">
+      <div class="page">
+        <div class="page-head"><p class="kick">— NSE movers · all boards</p><h2>Where the money <span class="acc">moved today.</span></h2><p class="asof" data-asof="prices"></p></div>
+        <div class="controls">
+          <div class="seg" id="mov-kind" role="group" aria-label="Movers view"><button data-k="price" class="on" aria-pressed="true">Price &amp; volume</button><button data-k="aladin" data-legacy aria-pressed="false">ALADIN probability</button><button data-k="shock" aria-pressed="false">Supply-chain shocks</button><button data-k="link" aria-pressed="false">Linked companies</button></div>
+          <div class="seg" id="mov-h" role="group" aria-label="Horizon" hidden><button data-h="5" aria-pressed="false">5D</button><button data-h="10" class="on" aria-pressed="true">10D</button><button data-h="20" aria-pressed="false">20D</button></div>
+        </div>
+        <div id="mov-price">
+        <div class="controls">
+          <div class="seg" id="mov-tabs"><button data-m="gain" class="on">Gainers</button><button data-m="lose">Losers</button><button data-m="val">Most active</button><button data-m="hi">52W high</button><button data-m="lo">52W low</button></div>
+          <div class="seg" id="board-grp"><button data-b="All" class="on">All</button><button data-b="Main">Main board</button><button data-b="SME">SME</button><button data-b="ETF">ETFs</button></div>
+          <select id="sector-sel" aria-label="Sector"><option value="">All sectors</option></select>
+          <input id="mov-filter" type="search" placeholder="Filter by name or symbol" aria-label="Filter movers">
+        </div>
+        <div class="tablecard"><table class="tbl" id="mov-table"><thead><tr>
+          <th data-sort="s">Symbol</th><th data-sort="n">Company</th><th data-sort="p" class="r">Last</th><th data-sort="chg" class="r">Chg</th><th data-sort="pct" class="r">Chg %</th>
+          <th data-sort="v" class="r">Volume</th><th data-sort="val" class="r">Value</th><th data-sort="rv" class="r" title="Today's volume divided by the 20-day average, pro-rated by how much of the session has passed (approximate: a straight line through the day)">Rel vol</th><th data-sort="sw" class="r" title="Liquidity sweep seen today (needs the local tick program)">Sweep</th><th data-sort="deliv" class="r">Delivery</th><th>52-week range</th>
+          <th data-sort="grp" class="mov-grp" title="Which of NSE's own live lists this price was picked up from (unofficial; not an industry sector)">NSE Live</th><th></th></tr></thead><tbody></tbody></table></div>
+        <div class="more-row"><span class="mut" id="mov-count"></span><button class="btn-line" id="mov-more">Show 50 more</button></div>
+        </div>
+        <div id="mov-alt" hidden></div>
+      </div>
+    </section>
+
+    <!-- ================= SECTORS ================= -->
+    <section class="view" id="v-sectors">
+      <div class="page">
+        <div class="page-head"><p class="kick">— Sectors · NIFTY 500 · today</p><h2>Which parts of the market <span class="acc">are carrying it.</span></h2><p class="asof" data-asof="prices"></p></div>
+        <div class="breadth" id="breadth"></div>
+        <div class="sec-grid">
+          <div class="heat" id="heat"></div>
+          <div class="tablecard sec-detail" id="sec-detail"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= WORLD ================= -->
+    <section class="view" id="v-world">
+      <div class="page">
+        <div class="page-head"><p class="kick">— World · macro · flows</p><h2>The weather <span class="acc">every stock trades in.</span></h2><p class="asof" data-asof="world"></p></div>
+        <div class="world-grid">
+          <div class="tablecard"><div class="card-bar">World equity indices <span class="mut" id="wei-asof"></span></div><table class="tbl" id="wei"><thead><tr><th>Index</th><th class="r">Last</th><th class="r">Chg</th><th class="r">Chg %</th><th class="r">YTD</th><th class="r">As of</th></tr></thead><tbody></tbody></table></div>
+          <div class="world-side">
+            <div class="tablecard"><div class="card-bar">Currency · commodities · yields</div><table class="tbl" id="macro"><tbody></tbody></table></div>
+            <div class="tablecard"><div class="card-bar">FII / DII flows · NSE, provisional <span class="mut" id="fii-asof"></span></div><div id="fii"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= OUTLOOK ================= -->
+    <section class="view" id="v-outlook">
+      <div class="page">
+        <div class="page-head"><p class="kick">— Model outlook · next 20 trading days · NIFTY 500</p><h2>Which stocks are likely to <span class="acc">beat the NIFTY.</span></h2><p class="asof" data-asof="outlook"></p></div>
+        <p class="lede" id="ol-lede">Loading the model…</p>
+        <div class="ol-card" id="ol-card"></div>
+        <div class="controls">
+          <div class="seg" id="ol-mode"><button data-om="top" class="on">Most likely to beat NIFTY</button><button data-om="bottom">Least likely</button><button data-om="all">All</button></div>
+          <select id="ol-sector" aria-label="Sector"><option value="">All sectors</option></select>
+          <input id="ol-q" type="search" placeholder="Filter by name or symbol" aria-label="Filter outlook">
+        </div>
+        <div class="tablecard"><table class="tbl" id="ol-table"><thead><tr><th>#</th><th>Symbol</th><th>Company</th><th>Sector</th><th class="r">Probability</th><th class="r">Decile</th><th class="r">Past excess*</th><th>Main reasons</th></tr></thead><tbody></tbody></table></div>
+        <p class="note" id="ol-foot"></p>
+      </div>
+    </section>
+
+    <!-- ================= NEWS ================= -->
+    <section class="view" id="v-news">
+      <div class="page">
+        <div class="page-head"><p class="kick">— Financial wire · India markets + <a href="https://brutalist.report/topic/business" target="_blank" rel="noopener noreferrer">brutalist.report</a></p><h2>All the money news, <span class="acc">one page.</span></h2><p class="asof" data-asof="news"></p></div>
+        <div class="controls">
+          <div class="seg" id="news-filter"><button data-nf="all" class="on">All</button><button data-nf="india">India</button><button data-nf="global">Global</button><button data-nf="crypto">Crypto</button></div>
+          <div class="seg" id="news-time"><button data-h="1">1h</button><button data-h="3">3h</button><button data-h="6">6h</button><button data-h="12">12h</button><button data-h="24" class="on">24h</button></div>
+          <button class="btn-line" id="news-watch" aria-pressed="false">Only my watchlist</button>
+          <button class="btn-line" id="news-rd" aria-pressed="false" title="Headlines that name a company with a measured revenue dependency, or a customer or supplier named in a company's filing">Revenue links</button>
+          <input id="news-q" type="search" placeholder="Filter headlines (e.g. RBI, crude, Infosys)" aria-label="Filter headlines">
+          <a class="btn-line" href="https://brutalist.report/topic/business" target="_blank" rel="noopener noreferrer">Open brutalist.report ↗</a>
+        </div>
+        <p class="news-meta" id="news-meta"></p>
+        <div class="brutal-grid" id="news"></div>
+      </div>
+    </section>
+
+    <!-- ================= HOUSES ================= -->
+    <section class="view" id="v-houses">
+      <div class="page">
+        <div class="page-head"><p class="kick">— Business houses · NSE · live</p><h2>Who owns <span class="acc">India's market.</span></h2><p class="asof" data-asof="houses"></p></div>
+        <div id="houses"></div>
+      </div>
+    </section>
+
+    <!-- ================= CRYPTO (Bitcoin order-flow paper account; desk-crypto.js) ================= -->
+    <section class="view" id="v-crypto">
+      <div class="page">
+        <div id="crypto"><p class="note">Loading…</p></div>
+      </div>
+    </section>
+
+    <!-- ================= INDICES (every NSE index, SENSEX / BSE 100 / BSE 500, Bitcoin; desk-indices.js) ================= -->
+    <section class="view" id="v-indices">
+      <div class="page">
+        <div id="indices"><p class="note">Loading…</p></div>
+      </div>
+    </section>
+
+    <!-- ================= ALADIN (signals: signal, price goal, stop; click a stock for the reasons) ================= -->
+    <section class="view" id="v-signals">
+      <div class="page">
+        <div id="signals"><p class="note">Loading…</p></div>
+      </div>
+    </section>
+
+    <!-- ================= the earlier weekly signal (inside ALADIN BOT) ================= -->
+    <section class="view" id="v-sigold">
+      <div class="page">
+        <div id="signals-old"><p class="note">Loading…</p></div>
+      </div>
+    </section>
+
+    <!-- ================= ALADIN 2.0 ================= -->
+    <section class="view" id="v-a2">
+      <div class="page">
+        <div class="page-head"><p class="kick">— ALADIN 2.0 · forecast ranges, scoreboard and what it learned</p><h2>What ALADIN <span class="acc">knows, and what it learned.</span></h2></div>
+        <div id="a2v"><p class="note">Loading…</p></div>
+      </div>
+    </section>
+
+    <!-- ================= ALADIN BOT (locked by an access code) ================= -->
+    <section class="view" id="v-a2bot">
+      <div class="page">
+        <div id="a2bot-legacy"></div>
+        <div id="a2bot"><p class="note">Loading…</p></div>
+      </div>
+    </section>
+
+    <!-- ================= TOOLS (ALADIN) ================= -->
+    <section class="view" id="v-lab">
+      <div class="page">
+        <div class="page-head"><p class="kick">— Tools · B-Lab quant desk</p><h2>Models you can <span class="acc">question.</span></h2><p class="asof" data-asof="aladin"></p></div>
+        <div class="al-tools" id="al-tools"><button class="bcard pos" aria-current="true"><span class="lbl">Tool</span><span class="ttl">ALADIN</span><span class="sub">Probability that a stock closes higher in 5, 10 or 20 trading days, from three views you can inspect.</span></button><button class="bcard neutral" disabled><span class="lbl">Tool</span><span class="ttl">More tools soon</span><span class="sub">Not built yet.</span></button></div>
+        <div id="aladin"></div>
+      </div>
+    </section>
+
+    <section class="view" id="v-map">
+      <div class="page">
+        <div class="page-head"><p class="kick">— Live flights (OpenSky) · real news (Google News) · 7 shipping &amp; oil chokepoints · last 7 days only</p><h2>Where the world's <span class="acc">oil and trade move.</span></h2><p class="asof" data-asof="globe"></p></div>
+        <p class="lede">Live aircraft positions and real news from the last 7 days around the 7 straits and canals that carry most of the world's oil and seaborne trade. There is no free source of live cargo-ship positions, so ships aren't drawn here — each chokepoint's card below has real news about it instead. Click a point on the map, or a card, for details.</p>
+        <p class="note gd-disc">ALADIN is a statistical model built by students. It is often wrong. Educational analysis only, not investment advice.</p>
+        <div class="cards" id="globe-brief"></div>
+        <div class="gd-bar" id="gd-bar"></div>
+        <div class="gd-wrap" id="gd-wrap" hidden><canvas id="gd-canvas" aria-hidden="true"></canvas><canvas id="gd-gl" aria-hidden="true" hidden></canvas><div class="gd-tip" id="gd-tip" hidden></div><div class="globe-legend" id="gd-legend" aria-label="Legend"></div><p class="mut gd-hint">Drag to turn (or pan), scroll to zoom, click or tap a point for details. The List view lists everything shown.</p></div>
+        <div class="gd-list" id="gd-list" hidden></div>
+        <div class="globe-map" id="globe-map"></div>
+        <div class="globe-assets" id="globe-assets" hidden></div>
+        <div class="globe-cards" id="globe-cards"></div>
+        <div class="geo-desk" id="geo-desk"></div>
+        <div class="page-head" style="margin-top:28px"><h2 style="font-size:22px">World events, <span class="acc">as they're reported.</span></h2></div>
+        <ul class="wire" id="globe-events"></ul>
+      </div>
+    </section>
+  </main>
+
+  <div class="rp-bar" id="rp-bar" hidden>
+    <span class="rp-tag">● REPLAY</span>
+    <select id="rp-day" aria-label="Trading day to replay"></select>
+    <button class="rp-play" id="rp-play" title="Play / pause (Space)">❚❚</button>
+    <button class="btn-line sm" id="rp-restart" title="Back to 09:15">⟲</button>
+    <button class="btn-line sm on" id="rp-loop" title="Endless: at the close, roll into the next trading day (and loop the library)">∞ Endless</button>
+    <div class="seg" id="rp-speed" role="group" aria-label="Speed"><button data-sp="1">1×</button><button data-sp="10">10×</button><button data-sp="60" class="on">60×</button><button data-sp="300">300×</button></div>
+    <input type="range" id="rp-slider" min="0" max="1499" value="0" aria-label="Jump to a time">
+    <span class="rp-time" id="rp-time">09:15:00</span>
+    <span class="rp-note">NIFTY 50 · real NSE 1-minute prices, played back · not live</span>
+    <button class="btn-line sm" id="rp-exit" title="Back to current prices">✕ Exit replay</button>
+  </div>
+
+  <footer class="foot">
+    <span id="st-auto" class="st-auto">● Auto-updating</span>
+    <span id="st-data">Loading…</span>
+    <span class="mut" id="st-cover"></span>
+    <span class="grow"></span>
+    <span class="warn">Real data only · delayed · educational analysis only, not investment advice</span>
+  </footer>
+
+  <!-- function-key bar: fixed overlay, same codes as the command line -->
+  <nav class="fkeys" id="fkeys" aria-label="Function keys">
+    <button data-code="HELP"><kbd>F1</kbd>HELP</button>
+    <button data-code="WATCH"><kbd>F2</kbd>WATCH</button>
+    <button data-code="CH"><kbd>F3</kbd>CH</button>
+    <button data-code="NEWS"><kbd>F4</kbd>NEWS</button>
+    <button data-code="MOV"><kbd>F5</kbd>MOV</button>
+    <button data-code="MAP"><kbd>F6</kbd>MAP</button>
+    <button data-code="SCR"><kbd>F7</kbd>SCR</button>
+    <button data-code="OUT"><kbd>F8</kbd>OUT</button>
+  </nav>
+</div>
+
+<!-- search -->
+<div class="modal" id="search" hidden>
+  <div class="m-box" role="dialog" aria-label="Search">
+    <div class="m-in"><span>/</span><input id="q" type="text" autocomplete="off" spellcheck="false" placeholder="Symbol, company name, or a section (MOVERS, NEWS…)"><kbd>Esc</kbd></div>
+    <div class="m-tabs" id="q-tabs"><button data-f="all" class="on">All</button><button data-f="Main">Main board</button><button data-f="SME">SME</button><button data-f="etf">ETFs</button><button data-f="n500">NIFTY 500</button></div>
+    <ul class="m-list" id="q-list" role="listbox"></ul>
+    <div class="m-foot" id="q-foot"></div>
+  </div>
+</div>
+
+<!-- HELP: function directory -->
+<div class="modal" id="help" hidden>
+  <div class="m-box" role="dialog" aria-label="Function directory">
+    <div class="m-in"><span>HELP</span><input id="help-q" type="text" autocomplete="off" spellcheck="false" placeholder="Filter functions…"><kbd>Esc</kbd></div>
+    <table class="tbl"><thead><tr><th>Code</th><th>Screen</th><th>Example</th></tr></thead><tbody id="help-list"></tbody></table>
+    <div class="m-foot"><button class="btn-line sm" id="help-close">Close</button></div>
+  </div>
+</div>
+
+<!-- first-visit desk setup -->
+<div class="modal" id="onboard" hidden>
+  <div class="m-box ob" role="dialog" aria-label="Set up your desk">
+    <h3>What do you follow?</h3>
+    <p class="mut">Pick a lane. Its most-traded stocks go on your watchlist, and the terminal opens on the first one. You can change it any time.</p>
+    <div class="lanes" id="lanes"></div>
+    <div class="lane-preview" id="lane-preview"></div>
+    <div class="ob-actions"><button class="btn-line" id="ob-skip">Skip · show general desk</button><span class="grow"></span><button class="btn-ink" id="ob-open">Open desk</button></div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<!--TERMINAL-BODY-END-->
+<script type="module" src="terminal.js"></script>
+<script src="terminal-fx.js"></script>
+<script src="glossary.js"></script>
+<script src="terminal-guide.js"></script>
+</body>
+</html>

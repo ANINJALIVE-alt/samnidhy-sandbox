@@ -1,0 +1,140 @@
+{
+  "session_date": "2026-10-06",
+  "source": {
+    "session_file": "https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_06102026.csv",
+    "universe": "https://niftyindices.com/IndexConstituent/ind_nifty500list.csv",
+    "universe_source": "downloaded"
+  },
+  "settings": {
+    "picks": {
+      "gainers_count": 3,
+      "losers_count": 3
+    },
+    "filters": {
+      "universe_name": "NIFTY 500",
+      "universe_url": "https://niftyindices.com/IndexConstituent/ind_nifty500list.csv",
+      "series": [
+        "EQ"
+      ],
+      "min_price": 50,
+      "min_turnover_crore": 10,
+      "max_abs_move_pct": 30,
+      "min_history_years": 1,
+      "exclude_prefixes": [
+        "DUMMY"
+      ],
+      "exclude_symbols": []
+    }
+  },
+  "universe_count": 494,
+  "eligible_count": 435,
+  "gainers": [
+    {
+      "group": "gainer",
+      "rank": 1,
+      "label": "Top Gainer #1",
+      "symbol": "TRENT",
+      "yahoo_ticker": "TRENT.NS",
+      "name": "Trent Ltd.",
+      "industry": "Consumer Services",
+      "prev_close": 2580.0,
+      "open": 2800.0,
+      "high": 2914.0,
+      "low": 2782.3,
+      "close": 2906.0,
+      "pct_change": 12.6357,
+      "volume": 6695372,
+      "turnover_crore": 1919.3
+    },
+    {
+      "group": "gainer",
+      "rank": 2,
+      "label": "Top Gainer #2",
+      "symbol": "URBANCO",
+      "yahoo_ticker": "URBANCO.NS",
+      "name": "Urban Company Ltd.",
+      "industry": "Consumer Services",
+      "prev_close": 159.59,
+      "open": 160.0,
+      "high": 174.46,
+      "low": 160.0,
+      "close": 173.54,
+      "pct_change": 8.7411,
+      "volume": 23975368,
+      "turnover_crore": 409.72
+    },
+    {
+      "group": "gainer",
+      "rank": 3,
+      "label": "Top Gainer #3",
+      "symbol": "AETHER",
+      "yahoo_ticker": "AETHER.NS",
+      "name": "Aether Industries Ltd.",
+      "industry": "Chemicals",
+      "prev_close": 1661.0,
+      "open": 1649.0,
+      "high": 1814.1,
+      "low": 1640.9,
+      "close": 1799.8,
+      "pct_change": 8.3564,
+      "volume": 1456255,
+      "turnover_crore": 258.75
+    }
+  ],
+  "losers": [
+    {
+      "group": "loser",
+      "rank": 1,
+      "label": "Top Loser #1",
+      "symbol": "COALINDIA",
+      "yahoo_ticker": "COALINDIA.NS",
+      "name": "Coal India Ltd.",
+      "industry": "Oil Gas & Consumable Fuels",
+      "prev_close": 425.1,
+      "open": 426.05,
+      "high": 426.95,
+      "low": 410.6,
+      "close": 411.65,
+      "pct_change": -3.164,
+      "volume": 5548430,
+      "turnover_crore": 230.55
+    },
+    {
+      "group": "loser",
+      "rank": 2,
+      "label": "Top Loser #2",
+      "symbol": "PHOENIXLTD",
+      "yahoo_ticker": "PHOENIXLTD.NS",
+      "name": "Phoenix Mills Ltd.",
+      "industry": "Realty",
+      "prev_close": 1935.0,
+      "open": 1946.8,
+      "high": 1946.8,
+      "low": 1857.8,
+      "close": 1883.5,
+      "pct_change": -2.6615,
+      "volume": 617915,
+      "turnover_crore": 116.05
+    },
+    {
+      "group": "loser",
+      "rank": 3,
+      "label": "Top Loser #3",
+      "symbol": "SIGNATURE",
+      "yahoo_ticker": "SIGNATURE.NS",
+      "name": "Signatureglobal (India) Ltd.",
+      "industry": "Realty",
+      "prev_close": 738.2,
+      "open": 732.6,
+      "high": 740.2,
+      "low": 717.55,
+      "close": 719.35,
+      "pct_change": -2.5535,
+      "volume": 280842,
+      "turnover_crore": 20.44
+    }
+  ],
+  "skipped": [],
+  "fetched_at_utc": "2026-10-07T10:31:22+00:00",
+  "fetched_at_ist": "07 Oct 2026, 04:01 PM IST"
+}

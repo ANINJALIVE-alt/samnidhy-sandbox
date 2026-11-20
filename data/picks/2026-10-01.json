@@ -1,0 +1,140 @@
+{
+  "session_date": "2026-10-01",
+  "source": {
+    "session_file": "https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_04102026.csv",
+    "universe": "https://niftyindices.com/IndexConstituent/ind_nifty500list.csv",
+    "universe_source": "downloaded"
+  },
+  "settings": {
+    "picks": {
+      "gainers_count": 3,
+      "losers_count": 3
+    },
+    "filters": {
+      "universe_name": "NIFTY 500",
+      "universe_url": "https://niftyindices.com/IndexConstituent/ind_nifty500list.csv",
+      "series": [
+        "EQ"
+      ],
+      "min_price": 50,
+      "min_turnover_crore": 10,
+      "max_abs_move_pct": 30,
+      "min_history_years": 1,
+      "exclude_prefixes": [
+        "DUMMY"
+      ],
+      "exclude_symbols": []
+    }
+  },
+  "universe_count": 494,
+  "eligible_count": 460,
+  "gainers": [
+    {
+      "group": "gainer",
+      "rank": 1,
+      "label": "Top Gainer #1",
+      "symbol": "SCHNEIDER",
+      "yahoo_ticker": "SCHNEIDER.NS",
+      "name": "Schneider Electric Infrastructure Ltd.",
+      "industry": "Capital Goods",
+      "prev_close": 1203.4,
+      "open": 1203.0,
+      "high": 1294.3,
+      "low": 1195.5,
+      "close": 1275.4,
+      "pct_change": 5.983,
+      "volume": 1444982,
+      "turnover_crore": 182.77
+    },
+    {
+      "group": "gainer",
+      "rank": 2,
+      "label": "Top Gainer #2",
+      "symbol": "INOXINDIA",
+      "yahoo_ticker": "INOXINDIA.NS",
+      "name": "INOX India Ltd.",
+      "industry": "Capital Goods",
+      "prev_close": 2052.5,
+      "open": 2052.5,
+      "high": 2183.0,
+      "low": 2013.2,
+      "close": 2168.3,
+      "pct_change": 5.6419,
+      "volume": 629630,
+      "turnover_crore": 133.85
+    },
+    {
+      "group": "gainer",
+      "rank": 3,
+      "label": "Top Gainer #3",
+      "symbol": "IDBI",
+      "yahoo_ticker": "IDBI.NS",
+      "name": "IDBI Bank Ltd.",
+      "industry": "Financial Services",
+      "prev_close": 82.2,
+      "open": 81.87,
+      "high": 87.39,
+      "low": 81.32,
+      "close": 86.57,
+      "pct_change": 5.3163,
+      "volume": 26713864,
+      "turnover_crore": 226.72
+    }
+  ],
+  "losers": [
+    {
+      "group": "loser",
+      "rank": 1,
+      "label": "Top Loser #1",
+      "symbol": "POLICYBZR",
+      "yahoo_ticker": "POLICYBZR.NS",
+      "name": "PB Fintech Ltd.",
+      "industry": "Financial Services",
+      "prev_close": 1063.9,
+      "open": 1050.0,
+      "high": 1058.4,
+      "low": 963.9,
+      "close": 980.0,
+      "pct_change": -7.8861,
+      "volume": 14061779,
+      "turnover_crore": 1403.29
+    },
+    {
+      "group": "loser",
+      "rank": 2,
+      "label": "Top Loser #2",
+      "symbol": "BAJAJ-AUTO",
+      "yahoo_ticker": "BAJAJ-AUTO.NS",
+      "name": "Bajaj Auto Ltd.",
+      "industry": "Automobile and Auto Components",
+      "prev_close": 10874.0,
+      "open": 10701.0,
+      "high": 10714.0,
+      "low": 9900.0,
+      "close": 10045.0,
+      "pct_change": -7.6237,
+      "volume": 1491300,
+      "turnover_crore": 1510.04
+    },
+    {
+      "group": "loser",
+      "rank": 3,
+      "label": "Top Loser #3",
+      "symbol": "CHENNPETRO",
+      "yahoo_ticker": "CHENNPETRO.NS",
+      "name": "Chennai Petroleum Corporation Ltd.",
+      "industry": "Oil Gas & Consumable Fuels",
+      "prev_close": 1436.3,
+      "open": 1432.0,
+      "high": 1434.9,
+      "low": 1330.7,
+      "close": 1346.4,
+      "pct_change": -6.2591,
+      "volume": 1838710,
+      "turnover_crore": 252.22
+    }
+  ],
+  "skipped": [],
+  "fetched_at_utc": "2026-10-05T10:47:34+00:00",
+  "fetched_at_ist": "05 Oct 2026, 04:17 PM IST"
+}

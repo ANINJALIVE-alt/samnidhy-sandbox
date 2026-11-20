@@ -1,0 +1,140 @@
+{
+  "session_date": "2026-09-28",
+  "source": {
+    "session_file": "https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_28092026.csv",
+    "universe": "https://niftyindices.com/IndexConstituent/ind_nifty500list.csv",
+    "universe_source": "downloaded"
+  },
+  "settings": {
+    "picks": {
+      "gainers_count": 3,
+      "losers_count": 3
+    },
+    "filters": {
+      "universe_name": "NIFTY 500",
+      "universe_url": "https://niftyindices.com/IndexConstituent/ind_nifty500list.csv",
+      "series": [
+        "EQ"
+      ],
+      "min_price": 50,
+      "min_turnover_crore": 10,
+      "max_abs_move_pct": 30,
+      "min_history_years": 1,
+      "exclude_prefixes": [
+        "DUMMY"
+      ],
+      "exclude_symbols": []
+    }
+  },
+  "universe_count": 499,
+  "eligible_count": 429,
+  "gainers": [
+    {
+      "group": "gainer",
+      "rank": 1,
+      "label": "Top Gainer #1",
+      "symbol": "ELECON",
+      "yahoo_ticker": "ELECON.NS",
+      "name": "Elecon Engineering Co. Ltd.",
+      "industry": "Capital Goods",
+      "prev_close": 458.25,
+      "open": 458.5,
+      "high": 489.5,
+      "low": 452.25,
+      "close": 480.75,
+      "pct_change": 4.91,
+      "volume": 6723720,
+      "turnover_crore": 322.54
+    },
+    {
+      "group": "gainer",
+      "rank": 2,
+      "label": "Top Gainer #2",
+      "symbol": "AEGISVOPAK",
+      "yahoo_ticker": "AEGISVOPAK.NS",
+      "name": "Aegis Vopak Terminals Ltd.",
+      "industry": "Oil Gas & Consumable Fuels",
+      "prev_close": 287.5,
+      "open": 287.05,
+      "high": 301.3,
+      "low": 280.25,
+      "close": 298.55,
+      "pct_change": 3.8435,
+      "volume": 2120065,
+      "turnover_crore": 62.84
+    },
+    {
+      "group": "gainer",
+      "rank": 3,
+      "label": "Top Gainer #3",
+      "symbol": "GODIGIT",
+      "yahoo_ticker": "GODIGIT.NS",
+      "name": "Go Digit General Insurance Ltd.",
+      "industry": "Financial Services",
+      "prev_close": 253.7,
+      "open": 254.5,
+      "high": 267.0,
+      "low": 252.1,
+      "close": 263.25,
+      "pct_change": 3.7643,
+      "volume": 4342796,
+      "turnover_crore": 114.26
+    }
+  ],
+  "losers": [
+    {
+      "group": "loser",
+      "rank": 1,
+      "label": "Top Loser #1",
+      "symbol": "MANAPPURAM",
+      "yahoo_ticker": "MANAPPURAM.NS",
+      "name": "Manappuram Finance Ltd.",
+      "industry": "Financial Services",
+      "prev_close": 334.0,
+      "open": 328.0,
+      "high": 330.65,
+      "low": 312.15,
+      "close": 313.0,
+      "pct_change": -6.2874,
+      "volume": 8621230,
+      "turnover_crore": 273.45
+    },
+    {
+      "group": "loser",
+      "rank": 2,
+      "label": "Top Loser #2",
+      "symbol": "BANKINDIA",
+      "yahoo_ticker": "BANKINDIA.NS",
+      "name": "Bank of India",
+      "industry": "Financial Services",
+      "prev_close": 137.94,
+      "open": 137.5,
+      "high": 137.5,
+      "low": 129.31,
+      "close": 129.99,
+      "pct_change": -5.7634,
+      "volume": 10521208,
+      "turnover_crore": 138.9
+    },
+    {
+      "group": "loser",
+      "rank": 3,
+      "label": "Top Loser #3",
+      "symbol": "NAM-INDIA",
+      "yahoo_ticker": "NAM-INDIA.NS",
+      "name": "Nippon Life India Asset Management Ltd.",
+      "industry": "Financial Services",
+      "prev_close": 1157.0,
+      "open": 1155.0,
+      "high": 1155.0,
+      "low": 1091.3,
+      "close": 1093.9,
+      "pct_change": -5.4538,
+      "volume": 1010185,
+      "turnover_crore": 111.77
+    }
+  ],
+  "skipped": [],
+  "fetched_at_utc": "2026-09-29T10:09:08+00:00",
+  "fetched_at_ist": "29 Sep 2026, 03:39 PM IST"
+}
