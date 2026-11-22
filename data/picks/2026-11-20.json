@@ -1,7 +1,7 @@
 {
   "session_date": "2026-11-20",
   "source": {
-    "session_file": "https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_20112026.csv",
+    "session_file": "https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_22112026.csv",
     "universe": "https://niftyindices.com/IndexConstituent/ind_nifty500list.csv",
     "universe_source": "downloaded"
   },
@@ -135,6 +135,6 @@
     }
   ],
   "skipped": [],
-  "fetched_at_utc": "2026-11-22T04:25:54+00:00",
-  "fetched_at_ist": "22 Nov 2026, 09:55 AM IST"
+  "fetched_at_utc": "2026-11-22T14:17:30+00:00",
+  "fetched_at_ist": "22 Nov 2026, 07:47 PM IST"
 }
