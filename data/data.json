@@ -1,6 +1,6 @@
 {
   "site_name": "Samnidhy Sandbox",
-  "generated_on": "2026-11-23T02:48:45+00:00",
+  "generated_on": "2026-11-23T04:42:29+00:00",
   "session_date": "2026-11-20",
   "source": "NSE end-of-day file (picks and session moves); Yahoo Finance via yfinance (price history, P/E, market cap)",
   "trading_days_per_year": 252,
@@ -40,8 +40,8 @@
         "turnover_crore": 1879.09
       },
       "latest_close": 1003.0,
-      "trailing_pe": 26.085825,
-      "market_cap": 781482131456,
+      "trailing_pe": 25.370611,
+      "market_cap": 760055660544,
       "history": {
         "first_date": "2021-11-15",
         "trading_days": 1239,
@@ -69,8 +69,8 @@
         "turnover_crore": 168.96
       },
       "latest_close": 334.15,
-      "trailing_pe": 28.300682,
-      "market_cap": 207777234944,
+      "trailing_pe": 28.292164,
+      "market_cap": 207714697216,
       "history": {
         "first_date": "2021-11-15",
         "trading_days": 1239,
@@ -98,8 +98,8 @@
         "turnover_crore": 93.95
       },
       "latest_close": 563.95,
-      "trailing_pe": 16.683674,
-      "market_cap": 157506584576,
+      "trailing_pe": 16.439075,
+      "market_cap": 155197374464,
       "history": {
         "first_date": "2021-11-15",
         "trading_days": 1238,
@@ -127,8 +127,8 @@
         "turnover_crore": 181.67
       },
       "latest_close": 5614.5,
-      "trailing_pe": 91.2138,
-      "market_cap": 172438274048,
+      "trailing_pe": 89.375206,
+      "market_cap": 168962441216,
       "history": {
         "first_date": "2021-11-15",
         "trading_days": 1238,
@@ -156,8 +156,8 @@
         "turnover_crore": 129.38
       },
       "latest_close": 252.7,
-      "trailing_pe": 110.26087,
-      "market_cap": 197497061376,
+      "trailing_pe": 107.82609,
+      "market_cap": 193135919104,
       "history": {
         "first_date": "2021-11-15",
         "trading_days": 1239,
@@ -185,8 +185,8 @@
         "turnover_crore": 815.98
       },
       "latest_close": 611.95,
-      "trailing_pe": 10.5425825,
-      "market_cap": 262183780352,
+      "trailing_pe": 10.535713,
+      "market_cap": 262012960768,
       "history": {
         "first_date": "2021-11-15",
         "trading_days": 1239,
@@ -287,14 +287,14 @@
     "EIHOTEL.NS": {
       "INDUSINDBK.NS": 0.026949,
       "EIHOTEL.NS": 0.143361,
-      "NAVA.NS": 0.041799,
+      "NAVA.NS": 0.0418,
       "MTARTECH.NS": 0.028614,
       "PFOCUS.NS": 0.032655,
       "IIFL.NS": 0.031771
     },
     "NAVA.NS": {
       "INDUSINDBK.NS": 0.037308,
-      "EIHOTEL.NS": 0.041799,
+      "EIHOTEL.NS": 0.0418,
       "NAVA.NS": 0.237199,
       "MTARTECH.NS": 0.046204,
       "PFOCUS.NS": 0.041472,
