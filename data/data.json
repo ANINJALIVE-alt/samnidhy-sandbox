@@ -1,6 +1,6 @@
 {
   "site_name": "Samnidhy Sandbox",
-  "generated_on": "2026-11-24T04:32:19+00:00",
+  "generated_on": "2026-11-24T14:34:23+00:00",
   "session_date": "2026-11-23",
   "source": "NSE end-of-day file (picks and session moves); Yahoo Finance via yfinance (price history, P/E, market cap)",
   "trading_days_per_year": 252,
@@ -14,7 +14,7 @@
     "min_turnover_crore": 10,
     "min_history_years": 1,
     "skipped": [],
-    "session_file": "https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_23112026.csv"
+    "session_file": "https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_24112026.csv"
   },
   "order": [
     "ITI.NS",
@@ -40,7 +40,7 @@
         "turnover_crore": 1348.04
       },
       "latest_close": 276.21,
-      "trailing_pe": 118.03846,
+      "trailing_pe": 132.79327,
       "market_cap": 265949331456,
       "history": {
         "first_date": "2021-11-16",
@@ -98,7 +98,7 @@
         "turnover_crore": 147.63
       },
       "latest_close": 6961.5,
-      "trailing_pe": 113.39795,
+      "trailing_pe": 120.12942,
       "market_cap": 593706156032,
       "history": {
         "first_date": "2021-11-16",
@@ -156,7 +156,7 @@
         "turnover_crore": 2793.86
       },
       "latest_close": 163.0,
-      "trailing_pe": 19.131454,
+      "trailing_pe": 17.526882,
       "market_cap": 2032910336000,
       "history": {
         "first_date": "2021-11-16",
@@ -185,7 +185,7 @@
         "turnover_crore": 104.25
       },
       "latest_close": 236.65,
-      "trailing_pe": 110.06976,
+      "trailing_pe": 102.891304,
       "market_cap": 184296833024,
       "history": {
         "first_date": "2021-11-16",
@@ -1216,12 +1216,12 @@
         4935.16,
         4976.25,
         5885.95,
-        6516.41,
+        6516.42,
         6497.51,
         5892.22,
         5900.58,
         5923.86,
-        5968.24,
+        5968.23,
         6413.88,
         6385.63,
         5932.96,
@@ -1243,7 +1243,7 @@
         5758.25,
         5522.19,
         5511.54,
-        5550.8,
+        5550.79,
         6408.71,
         6494.28,
         6376.62,
@@ -1260,7 +1260,7 @@
         9215.82,
         8320.15,
         8257.47,
-        8965.88,
+        8965.89,
         8584.01,
         8103.44,
         7900.22,
@@ -1312,7 +1312,7 @@
         7110.2,
         6499.37,
         6615.46,
-        6596.02,
+        6596.03,
         6770.4,
         6679.73,
         6441.08,
