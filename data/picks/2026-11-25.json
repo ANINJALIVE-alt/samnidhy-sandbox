@@ -1,0 +1,140 @@
+{
+  "session_date": "2026-11-25",
+  "source": {
+    "session_file": "https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_25112026.csv",
+    "universe": "https://niftyindices.com/IndexConstituent/ind_nifty500list.csv",
+    "universe_source": "downloaded"
+  },
+  "settings": {
+    "picks": {
+      "gainers_count": 3,
+      "losers_count": 3
+    },
+    "filters": {
+      "universe_name": "NIFTY 500",
+      "universe_url": "https://niftyindices.com/IndexConstituent/ind_nifty500list.csv",
+      "series": [
+        "EQ"
+      ],
+      "min_price": 50,
+      "min_turnover_crore": 10,
+      "max_abs_move_pct": 30,
+      "min_history_years": 1,
+      "exclude_prefixes": [
+        "DUMMY"
+      ],
+      "exclude_symbols": []
+    }
+  },
+  "universe_count": 495,
+  "eligible_count": 454,
+  "gainers": [
+    {
+      "group": "gainer",
+      "rank": 1,
+      "label": "Top Gainer #1",
+      "symbol": "JWL",
+      "yahoo_ticker": "JWL.NS",
+      "name": "Jupiter Wagons Ltd.",
+      "industry": "Capital Goods",
+      "prev_close": 185.39,
+      "open": 192.67,
+      "high": 222.46,
+      "low": 191.17,
+      "close": 222.46,
+      "pct_change": 19.9957,
+      "volume": 63678666,
+      "turnover_crore": 1332.67
+    },
+    {
+      "group": "gainer",
+      "rank": 2,
+      "label": "Top Gainer #2",
+      "symbol": "DABUR",
+      "yahoo_ticker": "DABUR.NS",
+      "name": "Dabur India Ltd.",
+      "industry": "Fast Moving Consumer Goods",
+      "prev_close": 399.0,
+      "open": 401.75,
+      "high": 433.6,
+      "low": 401.45,
+      "close": 430.0,
+      "pct_change": 7.7694,
+      "volume": 17385340,
+      "turnover_crore": 737.84
+    },
+    {
+      "group": "gainer",
+      "rank": 3,
+      "label": "Top Gainer #3",
+      "symbol": "CANHLIFE",
+      "yahoo_ticker": "CANHLIFE.NS",
+      "name": "Canara HSBC Life Insurance Company Ltd.",
+      "industry": "Financial Services",
+      "prev_close": 124.52,
+      "open": 125.0,
+      "high": 134.59,
+      "low": 123.5,
+      "close": 132.96,
+      "pct_change": 6.778,
+      "volume": 2818895,
+      "turnover_crore": 36.8
+    }
+  ],
+  "losers": [
+    {
+      "group": "loser",
+      "rank": 1,
+      "label": "Top Loser #1",
+      "symbol": "APLAPOLLO",
+      "yahoo_ticker": "APLAPOLLO.NS",
+      "name": "APL Apollo Tubes Ltd.",
+      "industry": "Capital Goods",
+      "prev_close": 1670.0,
+      "open": 1503.0,
+      "high": 1549.0,
+      "low": 1342.2,
+      "close": 1476.0,
+      "pct_change": -11.6168,
+      "volume": 45104767,
+      "turnover_crore": 6638.42
+    },
+    {
+      "group": "loser",
+      "rank": 2,
+      "label": "Top Loser #2",
+      "symbol": "SUNTV",
+      "yahoo_ticker": "SUNTV.NS",
+      "name": "Sun TV Network Ltd.",
+      "industry": "Media Entertainment & Publication",
+      "prev_close": 678.8,
+      "open": 680.8,
+      "high": 680.8,
+      "low": 613.4,
+      "close": 616.25,
+      "pct_change": -9.2148,
+      "volume": 1244262,
+      "turnover_crore": 78.74
+    },
+    {
+      "group": "loser",
+      "rank": 3,
+      "label": "Top Loser #3",
+      "symbol": "ITI",
+      "yahoo_ticker": "ITI.NS",
+      "name": "ITI Ltd.",
+      "industry": "Telecommunication",
+      "prev_close": 276.21,
+      "open": 270.0,
+      "high": 270.27,
+      "low": 254.2,
+      "close": 257.6,
+      "pct_change": -6.7376,
+      "volume": 6239662,
+      "turnover_crore": 163.58
+    }
+  ],
+  "skipped": [],
+  "fetched_at_utc": "2026-11-25T14:39:31+00:00",
+  "fetched_at_ist": "25 Nov 2026, 08:09 PM IST"
+}
