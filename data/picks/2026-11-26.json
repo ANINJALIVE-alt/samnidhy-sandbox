@@ -1,0 +1,140 @@
+{
+  "session_date": "2026-11-26",
+  "source": {
+    "session_file": "https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_26112026.csv",
+    "universe": "https://niftyindices.com/IndexConstituent/ind_nifty500list.csv",
+    "universe_source": "downloaded"
+  },
+  "settings": {
+    "picks": {
+      "gainers_count": 3,
+      "losers_count": 3
+    },
+    "filters": {
+      "universe_name": "NIFTY 500",
+      "universe_url": "https://niftyindices.com/IndexConstituent/ind_nifty500list.csv",
+      "series": [
+        "EQ"
+      ],
+      "min_price": 50,
+      "min_turnover_crore": 10,
+      "max_abs_move_pct": 30,
+      "min_history_years": 1,
+      "exclude_prefixes": [
+        "DUMMY"
+      ],
+      "exclude_symbols": []
+    }
+  },
+  "universe_count": 495,
+  "eligible_count": 430,
+  "gainers": [
+    {
+      "group": "gainer",
+      "rank": 1,
+      "label": "Top Gainer #1",
+      "symbol": "ACE",
+      "yahoo_ticker": "ACE.NS",
+      "name": "Action Construction Equipment Ltd.",
+      "industry": "Capital Goods",
+      "prev_close": 1190.35,
+      "open": 1194.55,
+      "high": 1299.0,
+      "low": 1180.0,
+      "close": 1295.0,
+      "pct_change": 8.7915,
+      "volume": 3274944,
+      "turnover_crore": 414.56
+    },
+    {
+      "group": "gainer",
+      "rank": 2,
+      "label": "Top Gainer #2",
+      "symbol": "PRESTIGE",
+      "yahoo_ticker": "PRESTIGE.NS",
+      "name": "Prestige Estates Projects Ltd.",
+      "industry": "Realty",
+      "prev_close": 1685.1,
+      "open": 1689.0,
+      "high": 1840.7,
+      "low": 1675.0,
+      "close": 1832.1,
+      "pct_change": 8.7235,
+      "volume": 5492726,
+      "turnover_crore": 984.49
+    },
+    {
+      "group": "gainer",
+      "rank": 3,
+      "label": "Top Gainer #3",
+      "symbol": "HEGAM",
+      "yahoo_ticker": "HEGAM.NS",
+      "name": "HEG Advanced Materials Ltd.",
+      "industry": "Capital Goods",
+      "prev_close": 258.66,
+      "open": 263.0,
+      "high": 291.87,
+      "low": 260.01,
+      "close": 280.99,
+      "pct_change": 8.633,
+      "volume": 27678350,
+      "turnover_crore": 781.54
+    }
+  ],
+  "losers": [
+    {
+      "group": "loser",
+      "rank": 1,
+      "label": "Top Loser #1",
+      "symbol": "MAHABANK",
+      "yahoo_ticker": "MAHABANK.NS",
+      "name": "Bank of Maharashtra",
+      "industry": "Financial Services",
+      "prev_close": 98.71,
+      "open": 99.0,
+      "high": 99.75,
+      "low": 93.9,
+      "close": 94.2,
+      "pct_change": -4.5689,
+      "volume": 16495189,
+      "turnover_crore": 159.87
+    },
+    {
+      "group": "loser",
+      "rank": 2,
+      "label": "Top Loser #2",
+      "symbol": "INDIACEM",
+      "yahoo_ticker": "INDIACEM.NS",
+      "name": "India Cements Ltd.",
+      "industry": "Construction Materials",
+      "prev_close": 323.95,
+      "open": 321.8,
+      "high": 323.25,
+      "low": 308.0,
+      "close": 309.75,
+      "pct_change": -4.3834,
+      "volume": 653357,
+      "turnover_crore": 20.45
+    },
+    {
+      "group": "loser",
+      "rank": 3,
+      "label": "Top Loser #3",
+      "symbol": "IKS",
+      "yahoo_ticker": "IKS.NS",
+      "name": "Inventurus Knowledge Solutions Ltd.",
+      "industry": "Information Technology",
+      "prev_close": 1644.9,
+      "open": 1640.0,
+      "high": 1649.3,
+      "low": 1560.1,
+      "close": 1575.4,
+      "pct_change": -4.2252,
+      "volume": 366518,
+      "turnover_crore": 57.8
+    }
+  ],
+  "skipped": [],
+  "fetched_at_utc": "2026-11-26T14:36:06+00:00",
+  "fetched_at_ist": "26 Nov 2026, 08:06 PM IST"
+}
