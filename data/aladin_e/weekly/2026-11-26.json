@@ -106,7 +106,7 @@
    "rule": "F1",
    "what": "this evening's run used closing prices (it ran after 15:30 IST)",
    "ok": true,
-   "detail": "run at 2026-11-27T02:56:10Z"
+   "detail": "run at 2026-11-27T04:41:51Z"
   },
   {
    "rule": "S3",
@@ -148,5 +148,5 @@
   "Four weeks cannot show whether model E has an edge; that needs at least a year of live record.",
   "Educational analysis on paper only, not investment advice."
  ],
- "written_utc": "2026-11-27T02:56:11Z"
+ "written_utc": "2026-11-27T04:41:53Z"
 }
